@@ -1,4 +1,4 @@
-import PersonalService from '../services/PacienteService.js'
+import PersonalService from '../services/PersonalService.js'
 export default class PersonalController{
   constructor () {
     this.personalService = new PersonalService()
