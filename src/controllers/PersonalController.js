@@ -5,6 +5,11 @@ export default class PersonalController{
   }
 
   async create(req,res,next) {
-    //const personal = await this.personalService.create()
+    try{
+      const personal = await this.personalService.create(req.body)
+      res.status(201).json(personal)
+    }catch(error) {
+      next(error)
+    }
   }
 }
