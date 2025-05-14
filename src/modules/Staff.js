@@ -1,23 +1,29 @@
-export default class Personal {
+export default class Staff {
   constructor({
     firstName,
     lastName,
-    email,
+    personalEmail,
     phoneNumber,
     gender = '',
+    houseNumber,
     role = '',
     designation = '',
     staffID,
+    oficialEmail,
+    password,
     photo
   }){
     this.firstName = firstName
     this.lastName = lastName
-    this.email = email
+    this.personalEmail = personalEmail
     this.phoneNumber = phoneNumber
     this.gender = gender
     this.role = role
+    this.houseNumber = houseNumber
     this.designation = designation
     this.staffID = staffID,
+    this.oficialEmail = oficialEmail
+    this.password = password
     this.photo = photo
   }
 }

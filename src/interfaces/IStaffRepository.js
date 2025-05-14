@@ -1,4 +1,4 @@
-export default class IPersonalRepository {
+export default class IStaffRepository {
   
   create(user){
     throw new Error('Metodo no Implementado')

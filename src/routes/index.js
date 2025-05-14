@@ -1,10 +1,10 @@
 import { Router } from 'express'
-import personalRoutes from './personalRoutes.js'
+import staffRoutes from './staffRoutes.js'
 const router = Router()
 
 router.get('/', (req, res) => {
     res.json({ message: 'API v1' })
 })
 
-router.use('/personal',personalRoutes)
+router.use('/staff',staffRoutes)
 export default router
