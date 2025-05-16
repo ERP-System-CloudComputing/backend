@@ -46,4 +46,22 @@ export default class StaffRepository extends IStaffRepository {
     }
   }
 
+  async findByUser(email) {
+    const usuario = await this.collection.where('personalEmail', '==', email).get()
+
+    return usuario.empty ? null : { id: usuario.docs[0].id, ...usuario.docs[0].data() };
+  }
+
+  // ! === Métodos para actualizar y verificar el token === ! //
+  async updateSessionToken(userID, sessionToken) {
+    const user = this.collection.doc(userID);
+    await user.update({ currentSession: sessionToken })
+  }
+
+  async getSessionByToken(userID) {
+    const user = this.collection.doc(userID);
+    const userData = await user.get();
+    return userData.exists ? userData.data().currentSession : null;
+  }
+
 }
