@@ -4,6 +4,13 @@ const router = Router()
 const staffController = new StaffController()
 
 const staffRoutes = [
+  // ! === Ruta para login a los usuarios === ! //
+  {
+    method: 'post',
+    path: '/login',
+    // middleware: [authMiddleware, roleMiddleware('admin', 'soporte')],
+    handler: 'login'
+  },
   {
     method: 'get',
     path: '/getAll',
