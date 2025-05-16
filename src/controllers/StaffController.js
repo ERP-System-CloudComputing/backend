@@ -4,6 +4,17 @@ export default class StaffController{
     this.staffService = new StaffService()
   }
 
+  async login(req, res, next) {
+    try {
+      const { personalEmail, password } = req.body
+      const token = await this.staffService.login(personalEmail, password);
+      res.json({ token });
+      
+    } catch (error) {
+      next(error);
+    }
+  }
+
   async create(req,res,next) {
     try{
       const staff = await this.staffService.create(req.body)
