@@ -12,6 +12,12 @@ const staffRoutes = [
     handler: 'login'
   },
   {
+    method: 'post',
+    path: '/refresh-token',
+    middleware: [],
+    handler: 'refreshToken'
+  },
+  {
     method: 'get',
     path: '/getAll',
     //middleware: [],
