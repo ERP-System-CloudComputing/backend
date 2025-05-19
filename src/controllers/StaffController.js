@@ -30,6 +30,12 @@ export default class StaffController{
   
   async refreshToken(req, res, next) {
     try {
+      const { personalEmail } = req.body
+      const user = await this.staffService.getByEmail(personalEmail)
+
+      if (!user) 
+        throw { message: 'User not found', statusCode: 404 };
+
       const refreshToken = req.cookies.refreshToken || req.body.refreshToken;
       if (!refreshToken) 
         throw { message: 'Refresh token no proporcionado en Controlador', statusCode: 401 };
@@ -58,6 +64,59 @@ export default class StaffController{
         
       res.clearCookie('refreshToken');
       res.status(204).end();
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async requestPasswordReset(req, res, next) {
+    try {
+      const { personalEmail } = req.body;
+      await this.staffService.requestPasswordReset(personalEmail)
+      res.json({ message: 'Verification code sent successfully', success: true });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async sendEmail(req, res, next) {
+    try {
+      const { personalEmail } = req.body;
+      await this.staffService.sendEmail(personalEmail)
+      res.json({ message: 'Instructions sent successfully', success: true });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async verifyTokendAndSendCode(req, res, next) {
+    try {
+      const { token } = req.body;
+      const result = await this.staffService.verifyTokendAndSendCode(token);
+      res.json(result);
+
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async verifyResetCode(req, res, next) {
+    try {
+      const { personalEmail, code } = req.body;
+      const { resetToken } = await this.staffService.verifyResetCode(personalEmail, code);
+      res.json({ resetToken });
+
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async resetPassword(req, res, next) {
+    try {
+      const { token, newPassword } = req.body;
+      const { resetToken } = await this.staffService.resetPassword(token, newPassword);
+      res.json({ resetToken });
+
     } catch (error) {
       next(error);
     }
