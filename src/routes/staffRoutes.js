@@ -18,6 +18,31 @@ const staffRoutes = [
     handler: 'refreshToken'
   },
   {
+    method: 'post',
+    path: '/send-email',
+    handler: 'sendEmail'
+  },
+  {
+    method: 'post',
+    path: '/request-password-reset',
+    handler: 'requestPasswordReset'
+  },
+  {
+    method: 'post',
+    path: '/verify-token-and-send-code',
+    handler: 'verifyTokendAndSendCode'
+  },
+  {
+    method: 'post',
+    path: '/verify-reset-code',
+    handler: 'verifyResetCode'
+  },
+  {
+    method: 'post',
+    path: '/reset-password',
+    handler: 'resetPassword'
+  },
+  {
     method: 'get',
     path: '/getAll',
     //middleware: [],
