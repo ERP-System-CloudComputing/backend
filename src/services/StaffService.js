@@ -2,6 +2,7 @@ import StaffRepository from "../repositories/StaffRepository.js";
 import Staff from "../models/Staff.js";
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken';
+import { sendVerificationCode, sendEmailInstructions } from "../classes/Email.js";
 
 export default class StaffService {
   constructor () {
@@ -68,6 +69,95 @@ export default class StaffService {
   async logout(userId) {
     await this.staffRepository.updateSessionTokens(userId, { accessToken: null, refreshToken: null });
   }
+                                                                                                                  
+  async requestPasswordReset(personalEmail) {
+    const user = await this.staffRepository.findByUser(personalEmail);
+    if (!user) 
+      throw { message: 'Verification Code Wrong, user not found', statusCode: 404 };
+    
+    // * Generacion de codigo de verificacion 6 digitos:
+    const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+    const expiration = new Date(Date.now() + 15 * 60 * 1000); // 15 minutos de expiracion
+    
+    // * Guardar el codigo de verificacion en la base de datos
+    await this.staffRepository.saveVerificationCode(user.id, verificationCode, expiration);
+
+    // * Enviamos codigo de verificacion por email:
+    await sendVerificationCode(personalEmail, verificationCode)
+
+    return { message: 'Verification code sent successfully', success: true };
+  }
+
+  async sendEmail(personalEmail) {
+    const user = await this.staffRepository.findByUser(personalEmail);
+    if (!user)
+      throw { message: 'User not found, check with an administrator', statusCode: 404 };
+
+    // * Enviar instrucciones por Email:
+    await sendEmailInstructions(personalEmail)
+
+    return { message: 'Verification code sent successfully', success: true };
+  }
+
+  async verifyTokendAndSendCode(token) {
+    try {
+      // * Verificamos token:
+      const decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET);
+      if (decoded.purpose!== 'password_reset_init')
+        throw { message: 'Invalid token', statusCode: 400 };
+
+      const user = await this.staffRepository.findByUser(decoded.email);
+      if (!user) 
+        throw { message: 'Usuario no encontrado', statusCode: 404 };
+      
+      // * Enviamos instrucciones con metodo requestPasswordReset:
+      await this.requestPasswordReset(decoded.email)
+    } catch (error) {
+      throw { message: 'Invalid or expired token', statusCode: 400 };
+    }
+  }
+
+  async verifyResetCode(personalEmail, code) {
+    const user = await this.staffRepository.findByUser(personalEmail);
+    if (!user)
+      throw { message: 'User not found', statusCode: 404 };
+
+    // * Verificar si el codigo de verificacion es valido:
+    const isValid = await this.staffRepository.verifiCode(user.id, code);
+    if (!isValid)
+      throw { message: 'Expired or Invalid verification code', statusCode: 400 };
+
+    // * Generamos token para cambio de contraseña:
+    const resetToken = jwt.sign({ id: user.id, purpose: 'password_reset' }, process.env.JWT_ACCESS_SECRET, { expiresIn: '20m' });
+
+    return { resetToken };
+  }
+
+  async resetPassword(token, newPassword) {
+    try {
+      // * Verificamos token:
+      const decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET);
+      if (decoded.purpose !== 'password_reset')
+        throw { message: 'Invalid token purpose', statusCode: 400 };
+
+      // * Hasheamos la nueva contraseña:
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+      // * Actualizamos la contraseña en la base de datos:
+      await this.staffRepository.updatePassword(decoded.id, hashedPassword);
+
+      // * Eliminamos el codigo de verificacion de la base de datos, y la fecha de expiracion del codigo de verificacion en la base de datos:
+      await this.staffRepository.deleteVerificationCode(decoded.id, null, null);
+
+      return { message: 'Password reset successful', success: true}
+
+    } catch (error) {
+      if (error.name === 'TokenExpiredError') 
+        throw { message: 'El enlace ha expirado', statusCode: 401 };
+      
+      throw { message: error.message || 'Invalid or expired token', statusCode: 400 };
+    }
+  }
 
 
   async create(staffData) {
@@ -92,6 +182,9 @@ export default class StaffService {
     return this.staffRepository.create({...newStaff})
   }
 
+  async getByEmail() {
+    return await this.staffRepository.getByEmail()
+  }
 
   async getAll() {
     return await this.staffRepository.getAll()
