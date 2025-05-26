@@ -1,5 +1,5 @@
 import StaffRepository from "../repositories/StaffRepository.js";
-import Staff from "../modules/Staff.js";
+import Staff from "../models/Staff.js";
 import bcrypt from 'bcrypt'
 export default class StaffService {
   constructor () {
