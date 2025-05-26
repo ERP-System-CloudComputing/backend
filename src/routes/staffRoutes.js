@@ -17,6 +17,12 @@ const staffRoutes = [
     handler: 'getByRol'
   },
   {
+    method: 'get',
+    path: '/getByName/:name', 
+    // middleware: [],
+    handler: 'getByName'
+  },
+  {
     method: 'post',
     path: '/create',
     //middleware: [],

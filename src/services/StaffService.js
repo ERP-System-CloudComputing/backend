@@ -36,6 +36,10 @@ export default class StaffService {
     return await this.staffRepository.getByRol(rol)
   }
 
+  async getByName (name) {
+    return await this.staffRepository.getByName(name)
+  }
+
   async update (id,staffData){
     const { password } = staffData 
     const updateStaff = await this.staffRepository.getById(id)

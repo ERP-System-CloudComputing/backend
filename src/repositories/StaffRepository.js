@@ -27,6 +27,10 @@ export default class StaffRepository extends IStaffRepository {
     const staff = await this.collection.where('role', '==',role).get()
     return staff.empty ? null : { id:staff.docs[0].id, ...staff.docs[0].data() }
   }
+  async getByName(name) {
+    const staff = await this.collection.where('firstName', '==',name).get()
+    return staff.empty ? null : { id:staff.docs[0].id, ...staff.docs[0].data() }
+  }
   async getByFullName(firstName,lastName) {
     const staff =  await this.collection.where('firstName','==',firstName).where('lastName','==',lastName).get()
     return staff.empty ? null : { id: staff.docs[0].id, ...staff.docs[0].data() }

@@ -29,6 +29,15 @@ export default class StaffController{
       next(error)
     }
   }
+  async getByName(req,res,next) {
+    try {
+      const { name } = req.params 
+      const staffs = await this.staffService.getByName(name)
+      res.json(staffs)
+    } catch (error){
+      next(error)
+    }
+  }
   async update(req,res,next){
     try{
       const { id } = req.params
