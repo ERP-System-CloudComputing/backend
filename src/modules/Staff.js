@@ -8,10 +8,10 @@ export default class Staff {
     houseNumber,
     role = '',
     designation = '',
-    staffID,
-    oficialEmail,
-    password,
-    photo
+    staffID = '',
+    officialEmail = '',
+    password = '',
+    photo = null
   }){
     this.firstName = firstName
     this.lastName = lastName
@@ -22,7 +22,7 @@ export default class Staff {
     this.houseNumber = houseNumber
     this.designation = designation
     this.staffID = staffID,
-    this.oficialEmail = oficialEmail
+    this.officialEmail = officialEmail
     this.password = password
     this.photo = photo
   }
