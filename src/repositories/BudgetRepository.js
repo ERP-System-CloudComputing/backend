@@ -8,7 +8,7 @@ export default class BudgetRepository extends IStaffRepository {
     }
 
     async create(budget) {
-        const result = await this.collection.insertOne(budget);
-        return result.ops[0];
+        const result = await this.collection.add(budget);
+        return { id: result.id, ...budget };
     }
 }

@@ -28,6 +28,6 @@ export default class BudgetService {
         }
 
         const newBudget = new Budget(budget);
-        
+        return this.budgetRepository.create({ ...newBudget });
     }
 }
