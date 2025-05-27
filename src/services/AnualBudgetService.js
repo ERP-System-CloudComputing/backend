@@ -10,4 +10,8 @@ export default class AnualBudgetService {
         const newAnualBudget = new AnualBudget(anualBudget)
         return await this.anualBudgetRepository.create({ ...newAnualBudget })
     }
+
+    async getById(id) {
+        return await this.anualBudgetRepository.getById(id);
+    }
 }

@@ -10,6 +10,12 @@ const anualBudgetRoutes = [
         path: '/create',
         //middleware: [],
         handler: 'create'
+    },
+    {
+        method: 'get',
+        path: '/:id',
+        //middleware: [],
+        handler: 'getById'
     }
 ]
 
