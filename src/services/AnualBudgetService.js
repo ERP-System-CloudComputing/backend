@@ -1,27 +1,13 @@
+import AnualBudgetRepository from "../repositories/AnualBudgetRepository.js"
+import AnualBudget from "../models/AnualBudgets.js";
 
 export default class AnualBudgetService {
     constructor(anualBudgetModel) {
-        this.anualBudgetModel = anualBudgetModel;
+        this.anualBudgetRepository = new AnualBudgetRepository()
     }
 
-    async create(data) {
-        const anualBudget = new this.anualBudgetModel(data);
-        return await anualBudget.save();
-    }
-
-    async getAll() {
-        return await this.anualBudgetModel.find();
-    }
-
-    async getById(id) {
-        return await this.anualBudgetModel.findById(id);
-    }
-
-    async update(id, data) {
-        return await this.anualBudgetModel.findByIdAndUpdate(id, data, { new: true });
-    }
-
-    async delete(id) {
-        return await this.anualBudgetModel.findByIdAndDelete(id);
+    async create(anualBudget) {
+        const newAnualBudget = new AnualBudget(anualBudget)
+        return await this.anualBudgetRepository.create({ ...newAnualBudget })
     }
 }

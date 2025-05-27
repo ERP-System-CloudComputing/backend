@@ -1,5 +1,7 @@
 import { Router } from 'express'
 import staffRoutes from './staffRoutes.js'
+import budgetRoutes from './budgetRoutes.js'
+import anualBudgetRoutes from './anualBudgetRoutes.js'
 const router = Router()
 
 router.get('/', (req, res) => {
@@ -7,4 +9,7 @@ router.get('/', (req, res) => {
 })
 
 router.use('/staff',staffRoutes)
+// router.use('/budget', budgetRoutes)
+router.use('/anualBudget', anualBudgetRoutes)
+
 export default router

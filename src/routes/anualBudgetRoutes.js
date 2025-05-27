@@ -1,10 +1,10 @@
-import { Router } from 'express'
-import BudgetController from '../controllers/BudgetController.js'
+import { Router } from "express"
+import AnualBudgetsController from "../controllers/AnualBudgetsController.js"
 
 const router = Router()
-const budgetController = new BudgetController()
+const anualBudgetsController = new AnualBudgetsController()
 
-const budgetRoutes = [
+const anualBudgetRoutes = [
     {
         method: 'get',
         path: '/getAll',
@@ -31,12 +31,12 @@ const budgetRoutes = [
     }
 ]
 
-budgetRoutes.forEach( route => {
+anualBudgetRoutes.forEach(route => {
     router[route.method](
         route.path,
         ...(route.middleware || []),
-        budgetController[route.handler].bind(budgetController)
+        anualBudgetsController[route.handler].bind(anualBudgetsController)
     )
 })
 
-export default router 
+export default router

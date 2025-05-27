@@ -1,4 +1,4 @@
-export default class AnualBudgets {
+export default class AnualBudget {
     constructor({
         year,
         totalAmount = 0,
