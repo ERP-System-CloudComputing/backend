@@ -9,7 +9,7 @@ router.get('/', (req, res) => {
 })
 
 router.use('/staff',staffRoutes)
-// router.use('/budget', budgetRoutes)
+router.use('/budget', budgetRoutes)
 router.use('/anualBudget', anualBudgetRoutes)
 
 export default router

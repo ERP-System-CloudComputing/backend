@@ -1,13 +1,33 @@
 import BudgetRepository from "../repositories/BudgetRepository.js";
+import AnualBudgetRepository from "../repositories/AnualBudgetRepository.js";
 import Budget from "../models/Budget.js";
 
 export default class BudgetService {
     constructor(budgetRepository) {
         this.budgetRepository = new BudgetRepository();
+        this.anualBudgetRepository = new AnualBudgetRepository();
     }
 
     async create(budget) {
+        const { annualBudgetId } = budget;
+
+        if (!annualBudgetId) {
+            throw {
+                message: 'El ID del presupuesto anual es obligatorio',
+                statusCode: 400
+            }
+        }
+
+        const existingBudget = await this.anualBudgetRepository.getById(annualBudgetId);
+        
+        if (!existingBudget) {
+            throw {
+                message: 'Presupuesto anual no encontrado',
+                statusCode: 404
+            }
+        }
+
         const newBudget = new Budget(budget);
-        console.log(newBudget);
+        
     }
 }
