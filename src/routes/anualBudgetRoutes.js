@@ -6,28 +6,10 @@ const anualBudgetsController = new AnualBudgetsController()
 
 const anualBudgetRoutes = [
     {
-        method: 'get',
-        path: '/getAll',
-        //middleware: [],
-        handler: 'getAll'
-    },
-    {
         method: 'post',
         path: '/create',
         //middleware: [],
         handler: 'create'
-    },
-    {
-        method: 'put',
-        path: '/update/:id',
-        // middleware: [],
-        handler: 'update'
-    },
-    {
-        method: 'delete',
-        path: '/delete/:id',
-        // middleware: [],
-        handler: 'delete'
     }
 ]
 
