@@ -18,6 +18,12 @@ const staffRoutes = [
   },
   {
     method: 'get',
+    path: '/getById/:id', 
+    // middleware: [],
+    handler: 'getById'
+  },
+  {
+    method: 'get',
     path: '/getByName/:name', 
     // middleware: [],
     handler: 'getByName'
