@@ -14,4 +14,8 @@ export default class AnualBudgetService {
     async getById(id) {
         return await this.anualBudgetRepository.getById(id);
     }
+
+    async getByYear(year) {
+        return await this.anualBudgetRepository.getByYear(year);
+    }
 }

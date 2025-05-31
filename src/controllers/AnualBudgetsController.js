@@ -24,4 +24,14 @@ export default class AnualBudgetsController {
             next(error);
         }
     }
+
+    async getByYear(req, res, next) {
+        try {
+            const { year } = req.params;
+            const anualBudget = await this.anualBudgetsService.getByYear(year);
+            res.json(anualBudget);
+        } catch (error) {
+            next(error);
+        }
+    }
 }

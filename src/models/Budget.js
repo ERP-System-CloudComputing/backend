@@ -8,7 +8,7 @@ export default class Budget {
         variance = 0,
         requestDate,
         receivingOffice = '',
-        status = 'DRAFT', // DRAFT, PENDING_APPROVAL, APPROVED, REJECTED, COMPLETED, CANCELLED
+        status = 'PENDING', // PENDING, APPROVED
         createdAt = new Date(),
         updatedAt = new Date()
     }) {
