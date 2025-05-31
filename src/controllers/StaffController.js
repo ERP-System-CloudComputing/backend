@@ -1,4 +1,6 @@
 import StaffService from '../services/StaffService.js'
+import jwt from 'jsonwebtoken';
+
 export default class StaffController{
   constructor () {
     this.staffService = new StaffService()
@@ -52,18 +54,6 @@ export default class StaffController{
         });
       }
       res.json({ accessToken, expireIn: 20 * 60 });
-    } catch (error) {
-      next(error);
-    }
-  }
-
-  async logout(req, res, next) {
-    try {
-      const userId = req.user.id;
-      await this.staffService.logout(userId);
-        
-      res.clearCookie('refreshToken');
-      res.status(204).end();
     } catch (error) {
       next(error);
     }
@@ -174,6 +164,44 @@ export default class StaffController{
     }catch(error){
       next(error)
     }
+  }
+
+  async logout(req, res, next) {
+    try {
+        // * 1. Obtenemos el refresh token de las cookies:
+        const refreshToken = req.cookies.refreshToken || req.body.refreshToken;
+        // console.log('Refresh Token:', refreshToken);
+
+        // * 2. Verificamos que el refresh token exista:
+        if (refreshToken) {
+            const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+            await this.staffService.logout(decoded.id);
+        } else {
+            this.clearCokies(res);
+            return res.status(400).json({ message: 'No refresh token provided' });
+        }
+
+        // * 3. Limpiar cookies en la respuesta
+        this.clearCokies(res);
+
+
+        // * Invalidamos el token de acceso actual:
+        res.status(204).end();
+    } catch (error) {
+        this.clearCokies(res);
+        next(error);
+    }
+  }
+
+  clearCokies(res) {
+    res.clearCookie('auth._token.local');
+    res.clearCookie('auth._token_expiration.local');
+    res.clearCookie('auth.strategy');
+    res.clearCookie('refreshToken', {
+        httpOnly: true,
+        secure: false, // * De momento false permitiendo que la cookie se pueda enviar a través de HTTP (necesario para pruebas locales sin HTTPS)
+        sameSite: 'lax'
+    });
   }
 
 }
