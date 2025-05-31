@@ -102,4 +102,15 @@ export default class StaffRepository extends IStaffRepository {
     })
 
   }
+
+  async clearSessionTokens(userID) {
+    const user = await this.collection.doc(userID).get();
+
+    if (!user.exists) throw { message: 'User not found', statusCode: 404 };
+
+    await this.collection.doc(userID).update({
+        accessToken: null,
+        refreshToken: null
+    })
+  }
 }
