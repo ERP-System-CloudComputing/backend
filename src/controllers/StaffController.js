@@ -45,7 +45,7 @@ export default class StaffController{
       const { accessToken, refreshToken: newRefreshToken } = await this.staffService.refreshAccessToken(refreshToken);
 
       // * Actualizamos la cookie si existe:
-      if (req.cookie.refreshToken) {
+      if (req.cookies.refreshToken) {
         res.cookie('refreshToken', newRefreshToken, {
           httpOnly: true,
           secure: false,
