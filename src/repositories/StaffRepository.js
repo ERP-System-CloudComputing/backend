@@ -57,10 +57,14 @@ export default class StaffRepository extends IStaffRepository {
   }
 
   // ! === Métodos para actualizar y verificar el token === ! //
-  async updateSessionTokens(userID, sessionToken) {
-    await this.collection.doc(userID).update({ 
-      accessToken: sessionToken.accessToken,
-      refreshToken: sessionToken.refreshToken
+  async updateSessionTokens(userID, { accessToken, refreshToken, lastActivity = new Date() }) {
+    const userDoc = await this.collection.doc(userID).get();
+    if (!userDoc.exists) throw { message: 'User not found', statusCode: 404 };
+
+    await this.collection.doc(userID).update({
+        accessToken,
+        refreshToken,
+        lastActivity
     });
   }
 
@@ -100,6 +104,15 @@ export default class StaffRepository extends IStaffRepository {
       resetCode: null,
       resetCodeExpiration: null
     })
+  }
+
+  async updateLastActivity(userID, lastActivity) {
+    const userDoc = await this.collection.doc(userID).get();
+    if (!userDoc.exists) throw { message: 'User not found', statusCode: 404 };
+
+    await this.collection.doc(userID).update({
+      lastActivity: lastActivity
+    });
 
   }
 
