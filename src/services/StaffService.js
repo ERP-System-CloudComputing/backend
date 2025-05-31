@@ -49,14 +49,31 @@ export default class StaffService {
       const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
       const user = await this.staffRepository.getById(decoded.id);
 
-      if (!user || user.currentSession !== refreshToken) 
+      if (!user || user.refreshToken !== refreshToken) 
         throw { message: 'Invalid refresh token', statusCode: 401 };
+
+      // * Verificar inactividad por 20 min:
+      const lastActivity = user.lastActivity?.toDate?.() || user.lastActivity;
+
+      if (!lastActivity) {
+         const newAccessToken = this.generateAccessToken(user);
+         const newRefreshToken = this.generateRefreshToken(user);
+   
+         await this.staffRepository.updateSessionTokens(user.id, { accessToken: newAccessToken, refreshToken: newRefreshToken, lastActivity: new Date() });
+
+         return { accessToken: newAccessToken, refreshToken: newRefreshToken };
+      }
+
+      if (Date.now() - lastActivity.getTime() > 20 * 60 * 1000) {
+         await this.logout(user.id); // * Cerrar sesión si el usuario ha estado inactivo por más de 20 minutos
+         throw { message: 'User inactive, we close your account for security', statusCode: 401 };
+      }
 
       const newAccessToken = this.generateAccessToken(user);
       const newRefreshToken = this.generateRefreshToken(user);
 
       // * Actualizar el token en la base de datos:
-      await this.staffRepository.updateSessionTokens(user.id, { accessToken: newAccessToken, refreshToken: newRefreshToken });
+      await this.staffRepository.updateSessionTokens(user.id, { accessToken: newAccessToken, refreshToken: newRefreshToken, lastActivity: new Date() });
 
       return { accessToken: newAccessToken, refreshToken: newRefreshToken };
 
