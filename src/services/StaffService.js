@@ -225,4 +225,10 @@ export default class StaffService {
     await this.staffRepository.delete(id)
   }
 
+
+  async logout(userId) {
+    // * Eliminamos tokens de sesion de la DB:
+    await this.staffRepository.clearSessionTokens(userId);
+  }
+
 }
