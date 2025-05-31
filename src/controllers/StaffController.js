@@ -41,7 +41,9 @@ export default class StaffController{
       const refreshToken = req.cookies.refreshToken || req.body.refreshToken;
       if (!refreshToken) 
         throw { message: 'Refresh token no proporcionado en Controlador', statusCode: 401 };
-    
+
+      // * Verificamos si el usuario esta inactivo (ultima actividad > 20 min)
+      // * Si todo esta bien, procedemos a refrescar el token: 
       const { accessToken, refreshToken: newRefreshToken } = await this.staffService.refreshAccessToken(refreshToken);
 
       // * Actualizamos la cookie si existe:
