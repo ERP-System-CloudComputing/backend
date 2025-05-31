@@ -59,7 +59,7 @@ export default class StaffRepository extends IStaffRepository {
   // ! === Métodos para actualizar y verificar el token === ! //
   async updateSessionTokens(userID, sessionToken) {
     await this.collection.doc(userID).update({ 
-      currentSession: sessionToken.accessToken,
+      accessToken: sessionToken.accessToken,
       refreshToken: sessionToken.refreshToken
     });
   }
