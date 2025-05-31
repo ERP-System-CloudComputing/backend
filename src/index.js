@@ -3,9 +3,12 @@ import cors from 'cors'
 import dotenv from 'dotenv'
 import router from './routes/index.js'
 import errorMiddleware from './middleware/errorMiddleware.js'
+import cookieParser from 'cookie-parser'
 dotenv.config()
 
 const app = express()
+
+app.use(cookieParser())
 
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', process.env.APP_URL_FRONT || 'http://localhost:3000');
