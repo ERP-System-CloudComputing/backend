@@ -78,6 +78,12 @@ const staffRoutes = [
     // middleware: [],
     handler: 'delete'
   },
+  {
+    method: 'post',
+    path: '/logout',
+    // middleware: [],
+    handler: 'logout'
+  }
 ] 
 
 staffRoutes.forEach( route => {
