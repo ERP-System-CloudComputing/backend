@@ -51,6 +51,16 @@ export default class BudgetController {
             next(error);
         }
     }
+
+    async submitForApproval(req, res, next) {
+        try {
+            const { budgetIds } = req.body;
+            const budgets = await this.budgetService.submitForApproval(budgetIds);
+            res.json(budgets);
+        } catch (error) {
+            next(error);
+        }
+    }
     
     async update(req, res, next) {
         try {

@@ -12,6 +12,16 @@ export default class BudgetRepository extends IStaffRepository {
         return { id: result.id, ...budget };
     }
 
+    async getById(id) {
+        const doc = await this.collection.doc(id).get();
+        return doc.exists ? { id: doc.id, ...doc.data() } : null;
+    }
+
+    async update(id, budget) {
+        await this.collection.doc(id).update(budget);
+        return { id, ...budget };
+    }
+
     async getAll() {
         const snapshot = await this.collection.get();
         return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));

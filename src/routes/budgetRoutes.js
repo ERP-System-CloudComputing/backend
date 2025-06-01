@@ -40,6 +40,12 @@ const budgetRoutes = [
         path: '/getAllApproved',
         //middleware: [],
         handler: 'getAllApproved'
+    },
+    {
+        method: 'post',
+        path: '/submitForApproval',
+        //middleware: [],
+        handler: 'submitForApproval'
     }
 ]
 
