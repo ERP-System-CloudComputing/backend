@@ -83,6 +83,11 @@ const staffRoutes = [
     path: '/logout',
     // middleware: [],
     handler: 'logout'
+  },
+  {
+    method: 'get',
+    path: '/validate-token',
+    handler: 'validateToken'
   }
 ] 
 
