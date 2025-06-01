@@ -35,4 +35,12 @@ export default class BudgetService {
     async getAll() {
         return await this.budgetRepository.getAll();
     }
+
+    async getAllPending() {
+        return await this.budgetRepository.getAllPending();
+    }
+
+    async getAllApproved() {
+        return await this.budgetRepository.getAllApproved();
+    }
 }

@@ -16,4 +16,14 @@ export default class BudgetRepository extends IStaffRepository {
         const snapshot = await this.collection.get();
         return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     }
+
+    async getAllPending() {
+        const snapshot = await this.collection.where('status', '==', 'PENDING').get();
+        return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    }
+
+    async getAllApproved() {
+        const snapshot = await this.collection.where('status', '==', 'APPROVED').get();
+        return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    }
 }

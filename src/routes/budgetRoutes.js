@@ -28,6 +28,18 @@ const budgetRoutes = [
         path: '/delete/:id',
         // middleware: [],
         handler: 'delete'
+    },
+    {
+        method: 'get',
+        path: '/getAllPending',
+        //middleware: [],
+        handler: 'getAllPending'
+    },
+    {
+        method: 'get',
+        path: '/getAllApproved',
+        //middleware: [],
+        handler: 'getAllApproved'
     }
 ]
 

@@ -33,6 +33,24 @@ export default class BudgetController {
             next(error);
         }
     }
+
+    async getAllPending(req, res, next) {
+        try {
+            const budgets = await this.budgetService.getAllPending();
+            res.json(budgets);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async getAllApproved(req, res, next) {
+        try {
+            const budgets = await this.budgetService.getAllApproved();
+            res.json(budgets);
+        } catch (error) {
+            next(error);
+        }
+    }
     
     async update(req, res, next) {
         try {
