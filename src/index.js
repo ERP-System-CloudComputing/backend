@@ -7,7 +7,10 @@ dotenv.config()
 
 const app = express()
 
-app.use(cors())
+app.use(cors({
+    origin: process.env.CORS_ORIGIN || '*', // Permite solicitudes desde cualquier origen por defecto
+    credentials: true, // Permite el intercambio de cookies
+}))
 app.use(express.json())
 app.use('/api', router)
 
