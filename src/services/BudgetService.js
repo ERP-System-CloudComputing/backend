@@ -9,12 +9,8 @@ export default class BudgetService {
     }
 
     async create(budget) {
-        
-        console.log(budget.requestDate);
 
-        return
-
-        const anualBudgetId = await this.anualBudgetRepository.getByYear(budget.year);
+        const { annualBudgetId } = budget;
 
         if (!annualBudgetId) {
             throw {
