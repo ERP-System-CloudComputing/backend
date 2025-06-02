@@ -69,7 +69,7 @@ export default class StaffRepository extends IStaffRepository {
   }
 
   async getSessionByToken(userID) {
-    const user = this.collection.doc(userID).get();
+    const user = await this.collection.doc(userID).get();
     return user.exists ? user.data().refreshToken : null;
   }
 
