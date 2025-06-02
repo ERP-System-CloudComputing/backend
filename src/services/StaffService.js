@@ -12,19 +12,20 @@ export default class StaffService {
   async login(personalEmail, password) {
     const user = await this.staffRepository.findByUser(personalEmail);
     if (!user)
-        throw { messasge: 'User not found', statusCode: 401 };
-
-    // ! Verificar si ya hay sesion activa
-    const tokenExists = await this.staffRepository.getSessionByToken(user.id)
-    if (tokenExists)
-        throw { messasge: 'You are already logged in', statusCode: 401 };
-
+       throw { message: 'User not found', statusCode: 400, isCredentialError: true };
+ 
     // ! Comparar la contraseña encritada
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
-      throw { messasge: 'Invalid credentials', statusCode: 401 };
+      throw { message: 'Invalid credentials', statusCode: 400, isCredentialError: true };
     }
-
+ 
+    // ! Verificar si ya hay sesion activa
+    // const tokenExists = await this.staffRepository.getSessionByToken(user.id)
+    // if (tokenExists)
+    //    throw { message: 'You are already logged in', statusCode: 400, isCredentialError: true };
+ 
+ 
     // * Generamos ambos tokens.
     const accessToken = this.generateAccessToken(user);
     const refreshToken = this.generateRefreshToken(user);
@@ -199,8 +200,11 @@ export default class StaffService {
     return this.staffRepository.create({...newStaff})
   }
 
-  async getByEmail() {
-    return await this.staffRepository.getByEmail()
+  async getByEmail(personalEmail) {
+   if (!personalEmail) { 
+      throw { message: 'Email is required', statusCode: 400 }
+   }
+   return await this.staffRepository.getByEmail(personalEmail)
   }
 
   async getAll() {
@@ -213,6 +217,9 @@ export default class StaffService {
 
   async getByName (name) {
     return await this.staffRepository.getByName(name)
+  }
+  async getById(id) {
+   return await this.staffRepository.getById(id);
   }
 
   async update (id,staffData){
