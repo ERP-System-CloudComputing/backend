@@ -15,4 +15,8 @@ export default class CircularService {
         // Guardar en el repositorio
         return await this.circularRepository.create({...newCircular});
     }
+
+    async getAll() {
+        return await this.circularRepository.getAll();
+    }
 }
