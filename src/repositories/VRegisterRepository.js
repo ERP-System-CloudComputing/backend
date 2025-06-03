@@ -20,4 +20,19 @@ export default class VRegisterRepository {
     ...doc.data()
     }))
    }
+   async delete(voucherId){
+    const register = await this.collection.where('voucherId', '==', voucherId).get()
+
+     if (register.empty) 
+      return
+    const batch = db.batch()
+    register.docs.forEach(doc => {
+      batch.delete(doc.ref)
+    })
+    await batch.commit()
+    return {
+      message: 'Registers deleted'
+    } 
+  }
+  
 }

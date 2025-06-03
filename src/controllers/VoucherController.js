@@ -32,4 +32,13 @@ export default class VoucherController {
       next(error)
     }
   }
+  async delete(req,res,next){
+    try{
+      const { id } = req.params 
+      await this.voucherService.delete(id)
+      res.status(204).end() // .end termina la peticion 
+    }catch(error){
+      next(error)
+    }
+  }
 }

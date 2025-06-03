@@ -12,4 +12,11 @@ export default class VoucherRepository {
     const Newvoucher = await this.collection.add(voucherData)
     return { id: Newvoucher.id, ...voucherData }
   }
+  async delete(id){
+    await this.collection.doc(id).delete()
+    return {
+      id,
+      message: 'Voucher deleted'
+    }
+  }
 }

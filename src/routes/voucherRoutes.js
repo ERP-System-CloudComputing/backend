@@ -22,6 +22,12 @@ const voucherRoutes = [
     path: '/create',
     //middleware: [],
     handler: 'create'
+  },
+  {
+    method: 'delete',
+    path: '/delete/:id',
+    // middleware: [],
+    handler: 'delete'
   }
 ] 
 

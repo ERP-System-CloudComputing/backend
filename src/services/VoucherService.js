@@ -22,4 +22,17 @@ export default class VoucherService {
   async getById (id) {
     return await this.vregisterRepository.getById(id)
   }
+  async delete (id) {
+  const vouchersExists = await this.vregisterRepository.getById(id)
+
+  if (!vouchersExists) {
+    throw {
+      message: 'Register not found',
+      statusCode: 404
+    }
+  }
+  await this.vregisterRepository.delete(id)
+  await this.voucherRepository.delete(id)
+  return { message: 'Deleted' }
+}
 }
