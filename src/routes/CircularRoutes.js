@@ -16,6 +16,18 @@ const circularRoutes = [
         path: '/getAll',
         //middleware: [],
         handler: 'getAll'
+    },
+    {
+        method: 'get',
+        path: '/:id',
+        //middleware: [],
+        handler: 'getById'
+    },
+    {
+        method: 'put',
+        path: '/update/:id',
+        //middleware: [],
+        handler: 'update'
     }
 ]
 

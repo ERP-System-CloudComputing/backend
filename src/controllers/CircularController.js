@@ -33,4 +33,15 @@ export default class CircularController {
             next(error);
         }
     }
+
+    async update(req, res, next) {
+        try {
+            const { id } = req.params;
+            const circularData = req.body;
+            const updatedCircular = await this.CircularService.update(id, circularData);
+            res.status(200).json(updatedCircular);
+        } catch (error) {
+            next(error);
+        }
+    }
 }

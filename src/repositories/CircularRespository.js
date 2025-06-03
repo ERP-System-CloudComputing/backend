@@ -28,4 +28,12 @@ export default class CircularRepository extends ICircularRepository {
         }
         return { id: doc.id, ...doc.data() };
     }
+
+    async update(id, circular) {
+        const result = await this.collection.doc(id).set(circular, { merge: true });
+        if (!result) {
+            throw new Error(`Error al actualizar el circular con ID ${id}.`);
+        }
+        return { id, ...circular };
+    }
 }
