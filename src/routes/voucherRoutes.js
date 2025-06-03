@@ -1,5 +1,5 @@
 import {Router} from 'express'
-import VoucherController from '../controllers/voucherController.js'
+import VoucherController from '../controllers/VoucherController.js'
 const router = Router()
 const voucherController = new VoucherController()
 

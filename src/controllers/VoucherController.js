@@ -17,12 +17,10 @@ export default class VoucherController {
   }
   async getAll(req,res,next) {
     try {
-      console.log('da')
-      // const staffs = await this.staffService.getAll()
-      // res.json(staffs)
+      const voucher = await this.voucherService.getAll()
+      res.json(voucher)
     } catch(error) {
       next(error)
     }
   }
-  async 
 }

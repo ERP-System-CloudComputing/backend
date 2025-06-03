@@ -15,4 +15,8 @@ export default class VoucherService {
     await this.vregisterRepository.create(dataListVoucherID)
     return {message:'Success',id}
   }
+
+  async getAll() {
+    return await this.voucherRepository.getAll()
+  }
 }
