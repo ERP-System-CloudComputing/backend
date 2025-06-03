@@ -12,6 +12,7 @@ export default class Circular {
         this.sentFrom = sentFrom;
         this.sentTo = sentTo;
         this.date = date;
+        this.type = type; // 'Sent' o 'Received'
     }
 
     // Método para validar los campos requeridos
