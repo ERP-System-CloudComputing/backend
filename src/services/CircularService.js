@@ -25,7 +25,9 @@ export default class CircularService {
     }
 
     async update(id, circularData) {
-        const existingCircular = await this.circularRepository.getById(id);
+        let existingCircular = await this.circularRepository.getById(id);
+
+        existingCircular = new Circular(existingCircular);
 
         // Actualizar los campos del circular existente con los nuevos datos
         Object.assign(existingCircular, circularData);
