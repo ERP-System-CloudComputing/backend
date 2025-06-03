@@ -20,4 +20,12 @@ export default class CircularRepository extends ICircularRepository {
         });
         return circulars;
     }
+
+    async getById(id) {
+        const doc = await this.collection.doc(id).get();
+        if (!doc.exists) {
+            throw new Error(`El circular con ID ${id} no existe.`); // Error handling for non-existent document
+        }
+        return { id: doc.id, ...doc.data() };
+    }
 }

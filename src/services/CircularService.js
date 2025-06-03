@@ -19,4 +19,8 @@ export default class CircularService {
     async getAll() {
         return await this.circularRepository.getAll();
     }
+
+    async getById(id) {
+        return await this.circularRepository.getById(id);
+    }
 }
