@@ -5,6 +5,7 @@ export default class Circular {
         sentFrom = '',
         sentTo = '',
         date = '',
+        type = 'Sent'
     }) {
         this.title = title;
         this.message = message;
