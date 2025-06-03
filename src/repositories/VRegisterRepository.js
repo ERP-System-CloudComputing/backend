@@ -13,4 +13,11 @@ export default class VRegisterRepository {
   })
     await batch.commit()
   }
+  async getById(voucherId){
+    const registers = await this.collection.where('voucherId', '==', voucherId).get()
+    return registers.docs.map(doc => ({
+    id: doc.id,
+    ...doc.data()
+    }))
+   }
 }

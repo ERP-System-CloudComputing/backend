@@ -11,6 +11,12 @@ const voucherRoutes = [
     handler: 'getAll'
   },
   {
+    method: 'get',
+    path: '/getById/:id',
+    //middleware: [],
+    handler: 'getById'
+  },
+  {
     // Agregar el ID del usuario que crea el voucher /create/:id
     method: 'post',
     path: '/create',

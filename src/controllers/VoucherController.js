@@ -8,7 +8,6 @@ export default class VoucherController {
   async create(req,res,next) {
     try {
       const {voucher, dataList} = req.body 
-      console.log('VOUCHER',voucher, 'lista', dataList)
       const Newvoucher = await this.voucherService.create(voucher,dataList)
       res.status(201).json(Newvoucher)
     } catch (error) {
@@ -20,6 +19,16 @@ export default class VoucherController {
       const voucher = await this.voucherService.getAll()
       res.json(voucher)
     } catch(error) {
+      next(error)
+    }
+  }
+
+  async getById(req,res,next) {
+    try {
+      const { id } = req.params 
+      const vouchers = await this.voucherService.getById(id)
+      res.json(vouchers)
+    } catch (error){
       next(error)
     }
   }

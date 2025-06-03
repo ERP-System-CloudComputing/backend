@@ -19,4 +19,7 @@ export default class VoucherService {
   async getAll() {
     return await this.voucherRepository.getAll()
   }
+  async getById (id) {
+    return await this.vregisterRepository.getById(id)
+  }
 }
