@@ -18,7 +18,7 @@ export default class StaffRepository extends IStaffRepository {
   async getById(id){
       const staff = await this.collection.doc(id).get()
       return !staff.exists ? null : { id: staff.id, ...staff.data() }
-   }
+  }
   async getByEmail(personalEmail) {
     const staff = await this.collection.where('personalEmail', '==', personalEmail).get()
     return staff.empty ? null : staff.docs.map(doc => ({ id: doc.id, ...doc.data()}))[0]
