@@ -1,5 +1,6 @@
 import { Router } from 'express'
 import LogisticsController from '../controllers/LogisticsController.js'
+import path from 'path'
 
 const logisticsController = new LogisticsController()
 
@@ -17,6 +18,12 @@ const logisticsRoutes = [
         path: '/getAll',
         //middleware: [],
         handler: 'getAll'
+    },
+    {
+        method: 'get',
+        path: '/info',
+        //middleware: [],
+        handler: 'getInfo'
     }
 ]
 

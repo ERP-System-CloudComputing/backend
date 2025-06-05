@@ -23,4 +23,13 @@ export default class LogisticsController {
             res.status(500).json({ error: error.message });
         }
     }
+
+    async getInfo(req, res) {
+        try {
+            const info = await this.logisticsService.getInfo();
+            res.status(200).json(info);
+        } catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    }
 }
