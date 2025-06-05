@@ -6,7 +6,6 @@ export default class BeneficiaryRepository {
     }
 
     async create(beneficiary) {
-        beneficiary.validate();
         const doc = await this.collection.add(beneficiary);
         return { id: doc.id, ...beneficiary };
     }

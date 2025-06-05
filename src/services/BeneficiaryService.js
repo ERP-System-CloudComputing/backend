@@ -1,4 +1,4 @@
-import Beneficiary from "../models/Beneficiary.JS";
+import Beneficiary from "../models/Beneficiary.js";
 import BeneficiaryRepository from "../repositories/BeneficiaryRepository.js";
 
 export default class BeneficiaryService {
@@ -13,7 +13,7 @@ export default class BeneficiaryService {
 
             newBeneficiary.validate();
 
-            return await this.repository.create(newBeneficiary);
+            return await this.repository.create({...newBeneficiary});
         } catch (error) {
             throw new Error(`Error al crear el beneficiario: ${error.message}`);
         }

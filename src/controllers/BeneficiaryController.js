@@ -8,7 +8,7 @@ export default class BeneficiaryController {
     async create(req, res, next) {
         try {
             const beneficiaryData = req.body;
-            const newBeneficiary = await this.beneficiaryService.createBeneficiary(beneficiaryData);
+            const newBeneficiary = await this.beneficiaryService.create(beneficiaryData);
             res.status(201).json(newBeneficiary);
         } catch (error) {
             next(error);
@@ -18,7 +18,7 @@ export default class BeneficiaryController {
     async getById(req, res, next) {
         try {
             const { id } = req.params;
-            const beneficiary = await this.beneficiaryService.getBeneficiaryById(id);
+            const beneficiary = await this.beneficiaryService.getById(id);
             res.status(200).json(beneficiary);
         } catch (error) {
             next(error);

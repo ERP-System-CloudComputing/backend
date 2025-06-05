@@ -4,6 +4,8 @@ import budgetRoutes from './budgetRoutes.js'
 import anualBudgetRoutes from './anualBudgetRoutes.js'
 import circularRoutes from './circularRoutes.js'
 import fileRoutes from './filesRoutes.js'
+import beneficiaryRoutes from './beneficiaryRoutes.js'
+import logisticsRoutes from './logisticsRoutes.js'
 
 const router = Router()
 
@@ -16,5 +18,7 @@ router.use('/budget', budgetRoutes)
 router.use('/anualBudget', anualBudgetRoutes)
 router.use('/circular', circularRoutes)
 router.use('/files', fileRoutes)
+router.use('/beneficiary', beneficiaryRoutes)
+router.use('/logistics', logisticsRoutes)
 
 export default router

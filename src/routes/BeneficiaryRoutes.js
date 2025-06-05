@@ -6,7 +6,7 @@ const router = Router();
 
 const beneficiaryController = new BeneficiaryController();
 
-const beneficiaryRoutes = {
+const beneficiaryRoutes = [
     {
         method: 'post',
         path: '/create',
@@ -17,7 +17,7 @@ const beneficiaryRoutes = {
         path: '/:id',
         handler: 'getById'
     }
-}
+]
 
 
 beneficiaryRoutes.forEach( route => {
@@ -27,3 +27,5 @@ beneficiaryRoutes.forEach( route => {
         beneficiaryController[route.handler].bind(beneficiaryController)
     )
 })
+
+export default router;

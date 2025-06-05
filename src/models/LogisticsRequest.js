@@ -1,5 +1,5 @@
-export default class LogisticsRequest () {
-    constructor(
+export default class LogisticsRequest {
+    constructor({
         title = '',
         purpose = '',
         amount = 0,
@@ -9,7 +9,7 @@ export default class LogisticsRequest () {
         dateFrom = '',
         dateTo = '',
         attachment = {}
-    ) {
+    }) {
         this.title = title;
         this.purpose = purpose;
         this.amount = amount;
