@@ -16,7 +16,10 @@ export default class MaintenanceRepository extends IMaintenanceRepository {
   }
   async getByDate(date) {
     const maintenance = await this.collection.where('date', '==',date).get()
-    return maintenance.empty ? null : { id:maintenance.docs[0].id, ...maintenance.docs[0].data() }
+    return maintenance.docs.map(doc => ({
+    id: doc.id,
+    ...doc.data()
+    }))
   }
 
 }
