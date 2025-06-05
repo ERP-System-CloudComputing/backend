@@ -32,7 +32,7 @@ export default class LogisticsService {
         try {
             const logistics = await this.logisticsRepository.getAll();
             const totalLogistics = logistics.length;
-            const totalCost = logistics.reduce((sum, logistic) => sum + logistic.cost, 0);
+            const totalCost = logistics.reduce((sum, logistic) => sum + parseFloat(logistic.amount.replace(/,/g, '')), 0);
             const pendingLogistics = logistics.filter(logistic => logistic.status === 'PENDING').length;
             const approvedLogistics = logistics.filter(logistic => logistic.status === 'APPROVED').length;
 
