@@ -4,12 +4,14 @@ export default class Maintenance {
     number = '',
     date = '',
     maintenanceType = '',
-    recurring = ''
+    recurring = '',
+    status = ''
   }){
     this.itemName = itemName
     this.number = number
     this.date = date
     this.maintenanceType = maintenanceType
     this.recurring = recurring
+    this.status = status
   }
 }

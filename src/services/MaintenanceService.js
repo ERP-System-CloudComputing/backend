@@ -14,4 +14,15 @@ export default class MaintenanceService {
     async getByDate (date) {
     return await this.maintenanceRepository.getByDate(date)
   }
+  async update (id,maintenanceData){
+    const updateMaintenance = await this.maintenanceRepository.getById(id)
+    if ( !updateMaintenance ) {
+      throw { 
+        message: 'Staff not found', 
+        statusCode:404
+      }
+    }
+      const newMaintenance = new Maintenance({...updateMaintenance,...maintenanceData})
+      return this.maintenanceRepository.update(id,{...newMaintenance})
+    }
 }

@@ -21,5 +21,16 @@ export default class MaintenanceRepository extends IMaintenanceRepository {
     ...doc.data()
     }))
   }
+  async getById(id){
+      const maintenance = await this.collection.doc(id).get()
+      return !maintenance.exists ? null : { id: maintenance.id, ...maintenance.data() }
+  }
+  async update(id,maintenanceData) {
+    await this.collection.doc(id).update(maintenanceData)
+    return {
+      id,
+      ...maintenanceData
+    }
+  }
 
 }

@@ -21,19 +21,13 @@ const maintenanceRoutes = [
     path: '/create',
     //middleware: [],
     handler: 'create'
-  }, /*
+  },
   {
     method: 'put',
     path: '/update/:id',
     // middleware: [],
     handler: 'update'
-  },
-  {
-    method: 'delete',
-    path: '/delete/:id',
-    // middleware: [],
-    handler: 'delete'
-  }, */
+  }
 ] 
 
 maintenanceRoutes.forEach( route => {

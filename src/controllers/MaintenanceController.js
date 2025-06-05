@@ -28,4 +28,14 @@ export default class MaintenanceController{
       next(error)
     }
   }
+  async update(req,res,next){
+    try{
+      const { id } = req.params
+      const maintenanceData = req.body
+      const maintenance = await this.maintenanceService.update(id, maintenanceData)
+      res.json(maintenance)
+    }catch(error){
+      next(error)
+    }
+  }
 }
