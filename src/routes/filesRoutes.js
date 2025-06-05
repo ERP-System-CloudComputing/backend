@@ -44,6 +44,12 @@ const filesRoutes = [
         path: '/upload-pdf',
         middleware: [upload.single('file')],
         handler: 'uploadPDF'
+    },
+    {
+        method: 'get',
+        path: '/pdf/:filename',
+        middleware: [],
+        handler: 'getPDF'
     }
 ]
 

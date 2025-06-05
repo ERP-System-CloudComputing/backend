@@ -1,3 +1,10 @@
+import path from "path";
+import fs from 'fs';
+import { fileURLToPath } from 'url'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+
 export default class FilesController {
 
     async uploadPDF(req, res, next) {
@@ -23,6 +30,27 @@ export default class FilesController {
                 mimeType: file.mimetype
             };
             res.status(200).json(fileResponse);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async getPDF(req, res, next) {
+        try {
+            const { filename } = req.params;
+            
+            const filePath = path.join(__dirname, '..', 'uploads', 'pdfs', filename);
+
+            if (!fs.existsSync(filePath)) {
+                return res.status(404).json({ message: 'Archivo no encontrado.' });
+            }
+
+            res.setHeader('Content-Type', 'application/pdf');
+            res.sendFile(filePath, (err) => {
+                if (err) {
+                    return next(err);
+                }
+            })
         } catch (error) {
             next(error);
         }
