@@ -22,4 +22,16 @@ export default class LogisticsRepository {
             throw new Error(`Error al recuperar todos los Logistics: ${error.message}`);
         }
     }
+
+    async getById(id) {
+        try {
+            const doc = await this.collection.doc(id).get();
+            if (!doc.exists) {
+                throw new Error(`Logistics con ID ${id} no encontrado`);
+            }
+            return { id: doc.id, ...doc.data() };
+        } catch (error) {
+            throw new Error(`Error al recuperar el Logistics con ID ${id}: ${error.message}`);
+        }
+    }
 }

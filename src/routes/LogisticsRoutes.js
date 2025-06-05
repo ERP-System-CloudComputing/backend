@@ -24,6 +24,12 @@ const logisticsRoutes = [
         path: '/info',
         //middleware: [],
         handler: 'getInfo'
+    },
+    {
+        method: 'get',
+        path: '/:id',
+        //middleware: [],
+        handler: 'getById'
     }
 ]
 

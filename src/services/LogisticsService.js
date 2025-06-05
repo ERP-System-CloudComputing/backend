@@ -28,6 +28,14 @@ export default class LogisticsService {
         }
     }
 
+    async getById(id) {
+        try {
+            return await this.logisticsRepository.getById(id);
+        } catch (error) {
+            throw new Error(`Error al recuperar el Logistics con ID ${id}: ${error.message}`);
+        }
+    }
+
     async getInfo() {
         try {
             const logistics = await this.logisticsRepository.getAll();

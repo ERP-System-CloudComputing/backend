@@ -5,22 +5,32 @@ export default class LogisticsController {
         this.logisticsService = new LogisticsService();
     }
 
-    async create(req, res) {
+    async create(req, res, next) {
         try {
             const logisticData = req.body;
             const result = await this.logisticsService.create(logisticData);
             res.status(201).json(result);
         } catch (error) {
-            res.status(500).json({ error: error.message });
+            next(error);
         }
     }
 
-    async getAll(req, res) {
+    async getAll(req, res, next) {
         try {
             const logistics = await this.logisticsService.getAll();
             res.status(200).json(logistics);
         } catch (error) {
-            res.status(500).json({ error: error.message });
+            next(error);
+        }
+    }
+
+    async getById(req, res, next) {
+        try {
+            const { id } = req.params;
+            const logistic = await this.logisticsService.getById(id);
+            res.status(200).json(logistic);
+        } catch (error) {
+            next(error);
         }
     }
 
