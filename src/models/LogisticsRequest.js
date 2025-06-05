@@ -1,4 +1,4 @@
-export default LogisticsRequest = {
+export default class LogisticsRequest () {
     constructor(
         title = '',
         purpose = '',
