@@ -34,4 +34,14 @@ export default class LogisticsRepository {
             throw new Error(`Error al recuperar el Logistics con ID ${id}: ${error.message}`);
         }
     }
+
+    async update(id, logistic) {
+        try {
+            const docRef = this.collection.doc(id);
+            await docRef.update(logistic);
+            return { id, ...logistic };
+        } catch (error) {
+            throw new Error(`Error al actualizar el Logistics con ID ${id}: ${error.message}`);
+        }
+    }
 }

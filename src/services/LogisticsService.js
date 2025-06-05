@@ -54,4 +54,23 @@ export default class LogisticsService {
             throw new Error(`Error al recuperar la información del Logistics: ${error.message}`);
         }
     }
+
+    async changeAction(id, actionData) {
+        try {
+            const logistic = await this.logisticsRepository.getById(id);
+            if (!logistic) {
+                throw new Error('No se encontró el Logistics con el ID proporcionado.');
+            }
+            
+            const actionUpdatedLogistic = new LogisticsRequest({
+                ...logistic,
+                status: actionData.action || logistic.status,
+                remarks: actionData.remarks || logistic.remarks
+            })
+
+            return await this.logisticsRepository.update(id, {...actionUpdatedLogistic});
+        } catch (error) {
+            throw new Error(`Error al cambiar la acción del Logistics con ID ${id}: ${error.message}`);
+        }
+    }
 }

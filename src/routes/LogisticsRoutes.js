@@ -30,6 +30,12 @@ const logisticsRoutes = [
         path: '/:id',
         //middleware: [],
         handler: 'getById'
+    },
+    {
+        method: 'put',
+        path: '/action/:id',
+        //middleware: [],
+        handler: 'changeAction'
     }
 ]
 

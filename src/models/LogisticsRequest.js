@@ -8,7 +8,8 @@ export default class LogisticsRequest {
         status = 'PENDING',
         dateFrom = '',
         dateTo = '',
-        attachment = {}
+        attachment = {},
+        remarks = ''
     }) {
         this.title = title;
         this.purpose = purpose;
@@ -19,6 +20,7 @@ export default class LogisticsRequest {
         this.dateFrom = dateFrom;
         this.dateTo = dateTo;
         this.attachment = attachment;
+        this.remarks = remarks;
     }
 
     validate() {

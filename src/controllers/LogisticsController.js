@@ -42,4 +42,15 @@ export default class LogisticsController {
             res.status(500).json({ error: error.message });
         }
     }
+
+    async changeAction(req, res, next) {
+        try {
+            const { id } = req.params;
+            const actionData = req.body;
+            const result = await this.logisticsService.changeAction(id, actionData);
+            res.status(200).json(result);
+        } catch (error) {
+            next(error);
+        }
+    }
 }
