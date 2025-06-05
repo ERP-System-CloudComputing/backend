@@ -1,8 +1,11 @@
 import { Router } from 'express'
+import LogisticsController from '../controllers/LogisticsController.js'
+
+const logisticsController = new LogisticsController()
 
 const router = Router()
 
-const circularRoutes = [
+const logisticsRoutes = [
     {
         method: 'post',
         path: '/create',
@@ -17,11 +20,11 @@ const circularRoutes = [
     }
 ]
 
-circularRoutes.forEach( route => {
+logisticsRoutes.forEach( route => {
     router[route.method](
         route.path,
         ...(route.middleware || []),
-        circularController[route.handler].bind(circularController)
+        logisticsController[route.handler].bind(logisticsController)
     )
 })
 

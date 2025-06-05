@@ -1,27 +1,57 @@
 import { Router } from 'express'
+import multer from 'multer'
+import path from 'path'
+import { fileURLToPath } from 'url'
+import fs from 'fs'
+
+import FilesController from '../controllers/FilesController.js'
 
 const router = Router()
+const filesController = new FilesController()
 
-const circularRoutes = [
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        const mime = file.mimetype
+
+        let subfolder = '/other'
+
+        if (mime === 'application/pdf') {
+            subfolder = '/pdfs'
+        } else {
+            subfolder = '/other'
+        }
+
+        const dir = path.join(__dirname, '..', 'uploads', subfolder)
+
+        if(!fs.existsSync(dir)) {
+            fs.mkdirSync(dir, { recursive: true })
+        }
+        cb(null, dir)
+    },
+    filename: (req, file, cb) => {
+        cb(null, `${Date.now()}-${file.originalname}`)
+    }
+})
+
+const upload = multer({ storage })
+
+const filesRoutes = [
     {
         method: 'post',
-        path: '/create',
-        //middleware: [],
-        handler: 'create'
-    },
-    {
-        method: 'get',
-        path: '/getAll',
-        //middleware: [],
-        handler: 'getAll'
+        path: '/upload-pdf',
+        middleware: [upload.single('file')],
+        handler: 'uploadPDF'
     }
 ]
 
-circularRoutes.forEach( route => {
+filesRoutes.forEach( route => {
     router[route.method](
         route.path,
         ...(route.middleware || []),
-        circularController[route.handler].bind(circularController)
+        filesController[route.handler].bind(filesController)
     )
 })
 
