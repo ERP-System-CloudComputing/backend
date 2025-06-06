@@ -1,15 +1,11 @@
-export default class ICapacitoryRepository {
-  
+export default class IVRegisterRepository {
   create(user){
-    throw new Error('Metodo no Implementado')
-  }
-  getAll(user){
     throw new Error('Metodo no Implementado')
   }
   getById(user){
     throw new Error('Metodo no Implementado')
   }
-  update(user){
+  delete(user){
     throw new Error('Metodo no Implementado')
   }
-} 
+}

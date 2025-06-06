@@ -1,7 +1,8 @@
+import IVoucherRepository from "../interfaces/IVoucherRepository.js"
 import { db } from "../config/firebase.js"
-export default class VoucherRepository {
+export default class VoucherRepository extends IVoucherRepository {
   constructor () {
-    // super()
+    super()
     this.collection = db.collection('voucher')
   }
   async getAll() {

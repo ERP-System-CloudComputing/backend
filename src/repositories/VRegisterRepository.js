@@ -1,7 +1,8 @@
+import IVRegisterRepository from "../interfaces/IVRegisterRepository.js"
 import { db } from "../config/firebase.js"
-export default class VRegisterRepository {
+export default class VRegisterRepository extends IVRegisterRepository {
   constructor () {
-    // super()
+    super()
     this.collection = db.collection('voucherRegister')
   }
   // batch ejecuta una sola vez la peticion a firebase con todos los registros
