@@ -1,5 +1,6 @@
 import {Router} from 'express'
 import StaffController from '../controllers/StaffController.js'
+import authMiddleware from '../middleware/authMiddleware.js'
 const router = Router()
 const staffController = new StaffController()
 
@@ -83,6 +84,24 @@ const staffRoutes = [
     path: '/delete/:id',
     // middleware: [],
     handler: 'delete'
+  },
+  {
+    method: 'post',
+    path: '/logout',
+    // middleware: [],
+    handler: 'logout'
+  },
+  {
+    method: 'get',
+    path: '/validate-token',
+    handler: 'validateToken'
+  },
+  // ! === Ruta para obtener un usuario y mandarlo al frontend === ! //
+   {
+    method: 'get',
+    path: '/user',
+    middleware: [authMiddleware],
+    handler: 'getUser'
   },
 ] 
 

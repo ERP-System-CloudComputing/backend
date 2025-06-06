@@ -12,6 +12,8 @@ import stockRoutes from './stockRoutes.js'
 import voucherRoutes from './voucherRoutes.js'
 import maintenanceRoutes from './maintenanceRoutes.js'
 import capacityRoutes from './CapacityRoutes.js'
+import SalaryDefinition from './salaryDefinitionRoutes.js';
+
 const router = Router()
 
 router.get('/', (req, res) => {
@@ -19,6 +21,7 @@ router.get('/', (req, res) => {
 })
 
 router.use('/staff',staffRoutes)
+router.use('/salary-definitions', SalaryDefinition);
 router.use('/budget', budgetRoutes)
 router.use('/anualBudget', anualBudgetRoutes)
 router.use('/circular', circularRoutes)

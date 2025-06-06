@@ -11,7 +11,10 @@ export default class Staff {
     staffID = '',
     officialEmail = '',
     password = '',
-    photo = null
+    photo = null,
+    accessToken = null,
+    refreshToken = null,
+    lastActivity = null
   }){
     this.firstName = firstName
     this.lastName = lastName
@@ -25,5 +28,8 @@ export default class Staff {
     this.officialEmail = officialEmail
     this.password = password
     this.photo = photo
+    this.accessToken = accessToken
+    this.refreshToken = refreshToken
+    this.lastActivity = lastActivity
   }
 }
