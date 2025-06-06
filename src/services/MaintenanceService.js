@@ -22,7 +22,7 @@ export default class MaintenanceService {
         statusCode:404
       }
     }
-      const newMaintenance = new Maintenance({...updateMaintenance,...maintenanceData})
-      return this.maintenanceRepository.update(id,{...newMaintenance})
-    }
+    const newMaintenance = new Maintenance({...updateMaintenance,...maintenanceData})
+    return this.maintenanceRepository.update(id,{...newMaintenance})
+  }
 }
