@@ -1,4 +1,5 @@
 import StockRepository from "../repositories/StockRepository.js";
+import Stock from "../models/Stock.js";
 
 export default class StockService {
     constructor() {
@@ -9,7 +10,7 @@ export default class StockService {
         try {
             const stock = new Stock(stockData);
             stock.validate();
-            return await this.stockRepository.create(stock);
+            return await this.stockRepository.create({...stock});
         } catch (error) {
             throw new Error(`Error al crear el stock: ${error.message}`);
         }

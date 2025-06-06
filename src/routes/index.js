@@ -7,6 +7,7 @@ import fileRoutes from './filesRoutes.js'
 import beneficiaryRoutes from './beneficiaryRoutes.js'
 import logisticsRoutes from './logisticsRoutes.js'
 import memoRoutes from './memoRoutes.js'
+import stockRoutes from './stockRoutes.js'
 
 const router = Router()
 
@@ -22,5 +23,6 @@ router.use('/files', fileRoutes)
 router.use('/beneficiary', beneficiaryRoutes)
 router.use('/logistics', logisticsRoutes)
 router.use('/memo', memoRoutes)
+router.use('/stock', stockRoutes)
 
 export default router
