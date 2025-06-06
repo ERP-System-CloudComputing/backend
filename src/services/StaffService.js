@@ -9,7 +9,7 @@ export default class StaffService {
     this.staffRepository = new StaffRepository()
   }
 
-  async login(personalEmail, password) {
+  async login(personalEmail, password, rememberMe) {
     const user = await this.staffRepository.findByUser(personalEmail);
     if (!user)
        throw { message: 'User not found', statusCode: 400, isCredentialError: true };
@@ -30,9 +30,9 @@ export default class StaffService {
     const accessToken = this.generateAccessToken(user);
     const refreshToken = this.generateRefreshToken(user);
 
-    await this.staffRepository.updateSessionTokens(user.id, { accessToken, refreshToken }); //! Actualizar el token en la base de datos para el usuario en concreto
+    await this.staffRepository.updateSessionTokens(user.id, { accessToken, refreshToken, rememberMe }); //! Actualizar el token en la base de datos para el usuario en concreto
     
-    return { accessToken, refreshToken };
+    return { accessToken, refreshToken, rememberMe };
   }
 
   // * Generar token corto 
@@ -53,6 +53,9 @@ export default class StaffService {
       if (!user || user.refreshToken !== refreshToken) 
         throw { message: 'Invalid refresh token', statusCode: 401 };
 
+      // * Obtenemos el rememberMe del usuario de la base de datos:
+      const currentRememberMe = user.rememberMe || false;
+
       // * Verificar inactividad por 20 min:
       const lastActivity = user.lastActivity?.toDate?.() || user.lastActivity;
 
@@ -70,13 +73,14 @@ export default class StaffService {
          throw { message: 'User inactive, we close your account for security', statusCode: 401 };
       }
 
+
       const newAccessToken = this.generateAccessToken(user);
       const newRefreshToken = this.generateRefreshToken(user);
 
       // * Actualizar el token en la base de datos:
-      await this.staffRepository.updateSessionTokens(user.id, { accessToken: newAccessToken, refreshToken: newRefreshToken, lastActivity: new Date() });
+      await this.staffRepository.updateSessionTokens(user.id, { accessToken: newAccessToken, refreshToken: newRefreshToken, lastActivity: new Date(), rememberMe: currentRememberMe });
 
-      return { accessToken: newAccessToken, refreshToken: newRefreshToken };
+      return { accessToken: newAccessToken, refreshToken: newRefreshToken, rememberMe: currentRememberMe };
 
     } catch (error) {
       throw { message: 'Invalid refresh token', statusCode: 401 };
@@ -254,5 +258,11 @@ export default class StaffService {
     // * Eliminamos tokens de sesion de la DB:
     await this.staffRepository.clearSessionTokens(userId);
   }
+
+//   async getByUser(usuario) {
+//     const user = await this.UserRepository.findByUser(usuario)
+//     if (!user) throw { message: 'Usuario No Encontrado', statusCode: 404 }
+//     return user
+//   }
 
 }
