@@ -1,7 +1,7 @@
 import CapacityRepository from "../repositories/CapacityRepository.js"
 import CStaffRepository from "../repositories/CStaffRepository.js";
-import Capacity from "../modules/Capacity.js";
-import CapacityStaff from "../modules/CapacityStaff.js";
+import Capacity from "../models/Capacity.js";
+import CapacityStaff from "../models/CapacityStaff.js";
 
 export default class CapacityService {
   constructor () {

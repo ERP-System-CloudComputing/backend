@@ -1,5 +1,5 @@
 import MaintenanceRepository from "../repositories/MaintenanceRepository.js";
-import Maintenance from "../modules/Maintenance.js";
+import Maintenance from "../models/Maintenance.js";
 
 export default class MaintenanceService {
   constructor () {
