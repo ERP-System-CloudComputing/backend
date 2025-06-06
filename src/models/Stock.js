@@ -17,7 +17,9 @@ export default class Stock {
         this.quantity = quantity;
         this.unitPrice = unitPrice;
         this.totalCost = totalCost;
-        this.inStock = inStock;
+        if (inStock <= 0) {
+            this.inStock = quantity;
+        }
         this.supplier = supplier;
     }
 
