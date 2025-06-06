@@ -23,4 +23,28 @@ export default class MemoService {
             throw new Error(`Error al obtener todos los memos: ${error.message}`);
         }
     }
+
+    async getById(id) {
+        try {
+            return await this.memoRepository.getById(id);
+        } catch (error) {
+            throw new Error(`Error al obtener el memo con id ${id}: ${error.message}`);
+        }
+    }
+
+    async action(id, actionData) {
+        try {
+            const memo = await this.memoRepository.getById(id);
+            if (!memo) {
+                throw new Error(`El memo con id ${id} no existe`);
+            }
+            
+            const memoInstance = new Memo(memo);
+            Object.assign(memoInstance, actionData);
+
+            return await this.memoRepository.update(id, { ...memoInstance });
+        } catch (error) {
+            throw new Error(`Error performing action on memo with id ${id}: ${error.message}`);
+        }
+    }
 }

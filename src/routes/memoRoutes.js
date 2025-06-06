@@ -1,5 +1,6 @@
 import { Router } from "express";
 import MemoController from "../controllers/MemoController.js";
+import path from "path";
 
 const router = Router();
 
@@ -15,6 +16,16 @@ const memoRoutes = [
         method: 'get',
         path: '/getAll',
         handler: 'getAll',
+    },
+    {
+        method: 'get',
+        path: '/:id',
+        handler: 'getById'
+    },
+    {
+        method: 'put',
+        path: '/action/:id',
+        handler: 'action'
     }
 ]
 

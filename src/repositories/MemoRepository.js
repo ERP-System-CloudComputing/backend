@@ -24,4 +24,25 @@ export default class MemoRepository extends IMemoRepository {
             throw new Error(`Error retrieving all memos: ${error.message}`);
         }
     }
+
+    async getById(id) {
+        try {
+            const doc = await this.collection.doc(id).get();
+            if (!doc.exists) {
+                throw new Error(`Memo with id ${id} not found`);
+            }
+            return { id: doc.id, ...doc.data() };
+        } catch (error) {
+            throw new Error(`Error retrieving memo with id ${id}: ${error.message}`);
+        }
+    }
+
+    async update(id, memo) {
+        try {
+            await this.collection.doc(id).update(memo);
+            return { id, ...memo };
+        } catch (error) {
+            throw new Error(`Error updating memo with id ${memo.id}: ${error.message}`);
+        }
+    }
 }

@@ -9,6 +9,7 @@ export default class Memo {
         attachment = '',
         typeAttachment = '',
         body = '',
+        type = 'Send' // Send o Receive
     }) {
         this.title = title;
         this.sentFrom = sentFrom;
@@ -19,6 +20,7 @@ export default class Memo {
         this.attachment = attachment;
         this.typeAttachment = typeAttachment;
         this.body = body;
+        this.type = type; // Default type is 'Send'
     }
 
     validate () {
