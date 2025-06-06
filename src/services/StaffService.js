@@ -193,6 +193,9 @@ export default class StaffService {
   async getByRol (rol) {
     return await this.staffRepository.getByRol(rol)
   }
+  async getById (id) {
+    return await this.staffRepository.getById(id)
+  }
 
   async getByName (name) {
     return await this.staffRepository.getByName(name)

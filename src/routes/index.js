@@ -1,5 +1,8 @@
 import { Router } from 'express'
 import staffRoutes from './staffRoutes.js'
+import voucherRoutes from './voucherRoutes.js'
+import maintenanceRoutes from './maintenanceRoutes.js'
+import capacityRoutes from './CapacityRoutes.js'
 const router = Router()
 
 router.get('/', (req, res) => {
@@ -7,4 +10,7 @@ router.get('/', (req, res) => {
 })
 
 router.use('/staff',staffRoutes)
+router.use('/vouchers',voucherRoutes)
+router.use('/maintenance',maintenanceRoutes)
+router.use('/capacity',capacityRoutes)
 export default router
