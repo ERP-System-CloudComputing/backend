@@ -26,4 +26,23 @@ export default class SalaryDefinitionService {
     return this.salaryDefinitionRepository.getAll()
   }
 
+  async delete(id) {
+    const deleteUser = await this.salaryDefinitionRepository.getById(id)
+    if (!deleteUser) throw { message: 'Paciente no encontrado', statusCode: 404}
+
+    return this.salaryDefinitionRepository.delete(id)
+  }
+
+  async update (id,userData){
+    const updateUser = await this.salaryDefinitionRepository;
+    if ( !updateUser ) {
+      throw { 
+        message: 'User not found', 
+        statusCode:404
+      }
+    }
+    const newUser = new SalaryDefinition({ ...this.updateUser, ...userData })
+    return this.salaryDefinitionRepository.update( id, { ...newUsers} )
+  }
+
 }

@@ -29,4 +29,28 @@ export default class SalaryDefinitionRepository extends ISalaryDefiniton {
     }
   }
 
+  async delete(id) {
+    await this.collection.doc(id).delete()
+    return { id, message: 'User deleted Successfully' }
+  }
+
+  async update(id, userData) {
+    await this.collection.doc(id).update(userData)
+    return { id, ...userData }
+  }
+
+  async getById(id) { // <-- ¡Añade este método!
+    try {
+      const doc = await this.collection.doc(id).get();
+      if (!doc.exists) {
+        return null; // Retorna null si no se encuentra el documento
+      }
+      return { id: doc.id, ...doc.data() };
+    } catch (e) {
+      console.error("Error fetching salary definition by ID:", e);
+      throw new Error("Could not retrieve salary definition by ID");
+    }
+  }
+
+
 }

@@ -20,7 +20,21 @@ const salaryDefinitionRoutes = [
     path: '/users',
     // middleware: [authMiddleware],
     handler: 'getAll'
-  }
+  },
+   // ! === Ruta para borrar a los usuarios === ! //
+  {
+    method: 'delete',
+    path: '/delete/:id',
+    // middleware: [authMiddleware],
+    handler: 'delete'
+  },
+    // ! === Ruta para actulizar a los pacientes === ! //
+  {
+    method: 'put',
+    path: '/update/:id',
+    // middleware: [authMiddleware],
+    handler: 'update'
+  },
 ]
 
 salaryDefinitionRoutes.forEach( route => {

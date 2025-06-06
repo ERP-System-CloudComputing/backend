@@ -22,4 +22,27 @@ export default class SalaryDefinitionController {
       next(e);
     }
   }
+
+  async delete(req, res, next) {
+    try {
+      const { id } = req.params;
+      await this.salaryDefinitionService.delete(id)
+      res.status(204).end() // * Termina la petición
+
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  async update(req,res,next){
+    try{
+      const { id } = req.params
+      const userData = req.body
+      const user = await this.salaryDefinitionService.update(id, userData)
+      res.json(user);
+
+    }catch(error){
+      next(error);
+    }
+  }
 }
