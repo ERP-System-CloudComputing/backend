@@ -5,8 +5,7 @@ export default class SalaryDefinition {
         basicSalary,
         allowance,
         grossSalary,
-        deduction,
-        netSalary,
+        deduction
 
     }) {
         this.title = title,
@@ -14,7 +13,6 @@ export default class SalaryDefinition {
         this.basicSalary = basicSalary,
         this.allowance = allowance,
         this.grossSalary = grossSalary,
-        this.deduction = deduction,
-        this.netSalary = netSalary
+        this.deduction = deduction
     }
 }
