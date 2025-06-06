@@ -5,19 +5,19 @@ export default class MemoController {
         this.memoService = new MemoService();
     }
 
-    async createMemo(req, res, next) {
+    async create(req, res, next) {
         try {
             const memoData = req.body;
-            const memo = await this.memoService.createMemo(memoData);
+            const memo = await this.memoService.create(memoData);
             res.status(201).json(memo);
         } catch (error) {
             next(error);
         }
     }
 
-    async getAllMemos(req, res, next) {
+    async getAll(req, res, next) {
         try {
-            const memos = await this.memoService.getAllMemos();
+            const memos = await this.memoService.getAll();
             res.status(200).json(memos);
         } catch (error) {
             next(error);

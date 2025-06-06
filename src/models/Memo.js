@@ -37,7 +37,7 @@ export default class Memo {
         if (!this.action) {
             throw new Error('Action is required');
         }
-        if (this.haveAttachment && !this.attachment) {
+        if (this.haveAttachment == 'Yes' && !this.attachment) {
             throw new Error('Attachment is required when haveAttachment is true');
         }
     }

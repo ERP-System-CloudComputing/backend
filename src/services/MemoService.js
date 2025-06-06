@@ -6,17 +6,17 @@ export default class MemoService {
         this.memoRepository = new MemoRepository();
     }
 
-    async createMemo(memoData) {
+    async create(memoData) {
         try {
             const memo = new Memo(memoData);
             memo.validate();
-            return await this.memoRepository.create(memo);
+            return await this.memoRepository.create({ ...memo });
         } catch (error) {
             throw new Error(`Error al crear el memo: ${error.message}`);
         }
     }
 
-    async getAllMemos() {
+    async getAll() {
         try {
             return await this.memoRepository.getAll();
         } catch (error) {
