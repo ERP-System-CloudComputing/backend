@@ -13,7 +13,7 @@ export default class StaffController{
          return res.status(400).json({ message: 'Email and password are required', success: false });
       }
       
-      const { accessToken, refreshToken } = await this.staffService.login(personalEmail, password);
+      const { accessToken, refreshToken, rememberMe: serviceRememberMe } = await this.staffService.login(personalEmail, password, rememberMe);
       // * Configuracion de cookie para mantener la sesion iniciada:
       const cookiesOptions = {
         httpOnly: true,
@@ -21,15 +21,17 @@ export default class StaffController{
         sameSite: 'lax', // * stric -> Evitamos que el navegador envie la cookie en peticiones cross-site
         path: '/',
         // Si rememberMe es false, no establecemos maxAge para que sea una cookie de sesión:
-        ...(rememberMe ? { maxAge: 2 * 24 * 60 * 60 * 1000 } : {} )
+        ...(serviceRememberMe ? { maxAge: 2 * 24 * 60 * 60 * 1000 } : {} )
       };
 
       res.cookie('refreshToken', refreshToken, cookiesOptions);
-      res.json({ accessToken, refreshToken, expireIn: 20 * 60, success: true }); // * 20 min
+      res.json({ accessToken});
+    //   console.log('Valor de serviceRememberMe(Login):', serviceRememberMe);
+    //   console.log('Opciones de la cookie:', cookiesOptions);
       
     } catch (error) {
       // *  Solo limpiar cookies si NO es un error de credenciales
-      res.clearCookie('refreshToken');
+      res.clearCookie('refreshToken', { httpOnly: true, secure: false, sameSite: 'lax', path: '/' });
       if (error.isCredentialError) {
          return res.status(400).json({ message: 'Invalid email or password, please try again' , success: false });
       }
@@ -39,7 +41,7 @@ export default class StaffController{
   
   async refreshToken(req, res, next) {
     try {
-      const refreshToken = req.cookies.refreshToken || req.body.refreshToken;
+      const refreshToken = req.cookies.refreshToken;
       if (!refreshToken) 
         return res.status(401).json({ message: 'Refresh token no proporcionado en Controlador', statusCode: 401, success: false });
 
@@ -55,21 +57,22 @@ export default class StaffController{
 
       // * Verificamos si el usuario esta inactivo (ultima actividad > 20 min)
       // * Si todo esta bien, procedemos a refrescar el token: 
-      const { accessToken, refreshToken: newRefreshToken } = await this.staffService.refreshAccessToken(refreshToken);
+      const { accessToken, refreshToken: newRefreshToken, rememberMe: serviceRememberMe } = await this.staffService.refreshAccessToken(refreshToken);
 
       // * Actualizamos la cookie si existe:
-      if (req.cookies.refreshToken) {
-        res.cookie('refreshToken', newRefreshToken, {
+      const cookiesOptions = {
           httpOnly: true,
           secure: false,
-          maxAge: 2 * 24 * 60 * 60 * 1000, // 2 dias en milisegundos
-          sameSite:'lax'
-        });
-      }
+          sameSite:'lax',
+          path: '/',
+          ...(serviceRememberMe ? { maxAge: 2 * 24 * 60 * 60 * 1000 } : {} ) // * Si rememberMe es false, no establecemos maxAge para que sea una cookie de sesión
+      };
+      
+      res.cookie('refreshToken', newRefreshToken, cookiesOptions)
       res.json({ accessToken, expireIn: 20 * 60 });
 
     } catch (error) {
-      res.clearCookie('refreshToken');
+       res.clearCookie('refreshToken', { httpOnly: true, secure: false, sameSite: 'lax', path: '/' }); // * Para evitar ciclos infinitos o tokens inválidos
       if (error.name === 'TokenExpiredError' || error.name === 'JsonWebTokenError') {
          return res.status(401).json({ message: 'Invalid Refresh Token', statusCode: 401, success: false });
       }
@@ -248,6 +251,20 @@ export default class StaffController{
          console.error('Error en validateToken:', error);
          return res.status(500).json({ message: 'Invalid Token', valid: false  });
       }
-   }   
+   } 
+
+   async getUser (req, res, next) {
+    try {
+      const { personalEmail } = req.user
+      if (!personalEmail) throw { message: 'Usuario NO Encontrado', statusCode: 404}
+      
+      const user = await this.staffService.getByEmail(personalEmail)
+      if (!user) throw { message: 'Usuario No Encontrado', statusCode: 404 }
+
+      res.json({ user })
+    } catch (error) {
+      next(error)
+    }
+  }
 
 }
