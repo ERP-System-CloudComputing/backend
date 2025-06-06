@@ -2,7 +2,7 @@ import IStaffRepository from "../interfaces/IStaffRepository.js";
 import { db } from "../config/firebase.js";
 
 export default class StaffRepository extends IStaffRepository {
-  constructor () {
+  constructor() {
     super()
     this.collection = db.collection('staff')
   }
@@ -13,36 +13,36 @@ export default class StaffRepository extends IStaffRepository {
   }
   async getAll() {
     const staff = await this.collection.get()
-    return staff.docs.map((doc) => ({ id:doc.id, ...doc.data() }))
+    return staff.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
   }
-  async getById(id){
-      const staff = await this.collection.doc(id).get()
-      return !staff.exists ? null : { id: staff.id, ...staff.data() }
-   }
+  async getById(id) {
+    const staff = await this.collection.doc(id).get()
+    return !staff.exists ? null : { id: staff.id, ...staff.data() }
+  }
   async getByEmail(personalEmail) {
     const staff = await this.collection.where('personalEmail', '==', personalEmail).get()
-    return staff.empty ? null : staff.docs.map(doc => ({ id: doc.id, ...doc.data()}))[0]
+    return staff.empty ? null : staff.docs.map(doc => ({ id: doc.id, ...doc.data() }))[0]
   }
   async getByRol(role) {
-    const staff = await this.collection.where('role', '==',role).get()
-    return staff.empty ? null : { id:staff.docs[0].id, ...staff.docs[0].data() }
-  }
-  async getByName(name) {
-    const staff = await this.collection.where('firstName', '==',name).get()
-    return staff.empty ? null : { id:staff.docs[0].id, ...staff.docs[0].data() }
-  }
-  async getByFullName(firstName,lastName) {
-    const staff =  await this.collection.where('firstName','==',firstName).where('lastName','==',lastName).get()
+    const staff = await this.collection.where('role', '==', role).get()
     return staff.empty ? null : { id: staff.docs[0].id, ...staff.docs[0].data() }
   }
-  async update(id,staffData) {
+  async getByName(name) {
+    const staff = await this.collection.where('firstName', '==', name).get()
+    return staff.empty ? null : { id: staff.docs[0].id, ...staff.docs[0].data() }
+  }
+  async getByFullName(firstName, lastName) {
+    const staff = await this.collection.where('firstName', '==', firstName).where('lastName', '==', lastName).get()
+    return staff.empty ? null : { id: staff.docs[0].id, ...staff.docs[0].data() }
+  }
+  async update(id, staffData) {
     await this.collection.doc(id).update(staffData)
     return {
       id,
       ...staffData
     }
   }
-  async delete(id){
+  async delete(id) {
     await this.collection.doc(id).delete()
     return {
       id,
@@ -57,23 +57,29 @@ export default class StaffRepository extends IStaffRepository {
   }
 
   // ! === Métodos para actualizar y verificar el token === ! //
-  async updateSessionTokens(userID, { accessToken, refreshToken, lastActivity = new Date() }) {
+  async updateSessionTokens(userID, { accessToken, refreshToken, lastActivity = new Date(), rememberMe }) {
     const userDoc = await this.collection.doc(userID).get();
     if (!userDoc.exists) throw { message: 'User not found', statusCode: 404 };
 
-    await this.collection.doc(userID).update({
-        accessToken,
-        refreshToken,
-        lastActivity
-    });
+    const updateData = {
+      accessToken,
+      refreshToken,
+      lastActivity,
+      // * Usamos el 'rememberMe' que viene en la llamada
+      // * Si rememberMe es undefined en la llamada, entonces toma el valor existente en la DB
+      // * Si no existe en la DB, por defecto es false.
+      rememberMe: rememberMe !== undefined ? rememberMe : (userDoc.data().rememberMe || false)
+    };
+
+    await this.collection.doc(userID).update(updateData);
   }
 
   async getSessionByToken(userID) {
     const user = await this.collection.doc(userID).get();
-    return user.exists ? user.data().refreshToken : null;
+    return user.exists ? user.data().accessToken : null;
   }
 
-  async saveVerificationCode(userID, VerificationCode, expiration ) {
+  async saveVerificationCode(userID, VerificationCode, expiration) {
     await this.collection.doc(userID).update({
       resetCode: VerificationCode,
       resetCodeExpiration: expiration
@@ -122,8 +128,14 @@ export default class StaffRepository extends IStaffRepository {
     if (!user.exists) throw { message: 'User not found', statusCode: 404 };
 
     await this.collection.doc(userID).update({
-        accessToken: null,
-        refreshToken: null
+      accessToken: null,
+      refreshToken: null
     })
   }
+
+  //   async findByUser (user) {
+  //     const usuario = await this.collection.where('usuario' , '==', user).get()     
+
+  //     return usuario.empty ? null : { id: usuario.docs[0].id, ...usuario.docs[0].data() } 
+  //   }
 }
