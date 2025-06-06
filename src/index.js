@@ -17,10 +17,6 @@ const app = express()
 //     res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 //     next();
 //   });
-app.use(cors({
-    origin: process.env.CORS_ORIGIN || '*', // Permite solicitudes desde cualquier origen por defecto
-    credentials: true, // Permite el intercambio de cookies
-}))
 // * Middleware para permitir CORS con el paquete cors
 app.use(cors({
     origin: process.env.APP_URL_FRONT || 'http://localhost:3000',
