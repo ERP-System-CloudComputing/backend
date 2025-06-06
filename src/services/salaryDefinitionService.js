@@ -7,7 +7,7 @@ export default class SalaryDefinitionService {
   }
 
   async create(salaryData) {
-    if ( !salaryData.title || !salaryData.level || !salaryData.basicSalary || !salaryData.allowance || !salaryData.grossSalary || !salaryData.deduction || !salaryData.netSalary) {
+    if ( !salaryData.title || !salaryData.level || !salaryData.basicSalary || !salaryData.allowance || !salaryData.grossSalary || !salaryData.deduction) {
       throw new Error("Missing required salary definition fields");
     }
     const newSalaryDefinition = new SalaryDefinition({
@@ -16,8 +16,7 @@ export default class SalaryDefinitionService {
       basicSalary: salaryData.basicSalary,
       allowance: salaryData.allowance,
       grossSalary: salaryData.grossSalary,
-      deduction: salaryData.deduction,
-      netSalary: salaryData.netSalary,
+      deduction: salaryData.deduction
     });
 
     return this.salaryDefinitionRepository.create(newSalaryDefinition);
