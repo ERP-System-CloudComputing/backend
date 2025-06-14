@@ -1,4 +1,6 @@
 import StaffService from '../services/StaffService.js'
+import jwt from 'jsonwebtoken';
+
 export default class StaffController{
   constructor () {
     this.staffService = new StaffService()
@@ -7,64 +9,73 @@ export default class StaffController{
   async login(req, res, next) {
     try {
       const { personalEmail, password, rememberMe } = req.body
-      const { accessToken, refreshToken } = await this.staffService.login(personalEmail, password);
+      if (!personalEmail || !password) {
+         return res.status(400).json({ message: 'Email and password are required', success: false });
+      }
       
+      const { accessToken, refreshToken, rememberMe: serviceRememberMe } = await this.staffService.login(personalEmail, password, rememberMe);
       // * Configuracion de cookie para mantener la sesion iniciada:
       const cookiesOptions = {
         httpOnly: true,
         secure: false, // * De momento false permitiendo que la cookie se pueda enviar a través de HTTP (necesario para pruebas locales sin HTTPS)
-        sameSite: 'lax' // * stric -> Evitamos que el navegador envie la cookie en peticiones cross-site
+        sameSite: 'lax', // * stric -> Evitamos que el navegador envie la cookie en peticiones cross-site
+        path: '/',
+        // Si rememberMe es false, no establecemos maxAge para que sea una cookie de sesión:
+        ...(serviceRememberMe ? { maxAge: 2 * 24 * 60 * 60 * 1000 } : {} )
       };
 
-      if (rememberMe) {
-        cookiesOptions.maxAge = 2 * 24 * 60 * 60 * 1000 // 2 dias en milisegundos
-      }
-
       res.cookie('refreshToken', refreshToken, cookiesOptions);
-      res.json({ accessToken, expireIn: 20 * 60 }); // * 20 min
+      res.json({ accessToken});
+    //   console.log('Valor de serviceRememberMe(Login):', serviceRememberMe);
+    //   console.log('Opciones de la cookie:', cookiesOptions);
       
     } catch (error) {
+      // *  Solo limpiar cookies si NO es un error de credenciales
+      res.clearCookie('refreshToken', { httpOnly: true, secure: false, sameSite: 'lax', path: '/' });
+      if (error.isCredentialError) {
+         return res.status(400).json({ message: 'Invalid email or password, please try again' , success: false });
+      }
       next(error);
     }
   }
   
   async refreshToken(req, res, next) {
     try {
-      const { personalEmail } = req.body
-      const user = await this.staffService.getByEmail(personalEmail)
-
-      if (!user) 
-        throw { message: 'User not found', statusCode: 404 };
-
-      const refreshToken = req.cookies.refreshToken || req.body.refreshToken;
+      const refreshToken = req.cookies.refreshToken;
       if (!refreshToken) 
-        throw { message: 'Refresh token no proporcionado en Controlador', statusCode: 401 };
-    
-      const { accessToken, refreshToken: newRefreshToken } = await this.staffService.refreshAccessToken(refreshToken);
+        return res.status(401).json({ message: 'Refresh token no proporcionado en Controlador', statusCode: 401, success: false });
+
+      const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+      const user = await this.staffService.getById(decoded.id);
+      if (!user) 
+         throw { message: 'User not found', statusCode: 404, isCredentialError: true };
+
+      if (user.refreshToken !== refreshToken) {
+         // * Si el refresh token no coincide con el almacenado, lanzamos un error:
+         throw { message: 'Invalid RefreshToken stored', statusCode: 401, isTokenError: true };
+      }
+
+      // * Verificamos si el usuario esta inactivo (ultima actividad > 20 min)
+      // * Si todo esta bien, procedemos a refrescar el token: 
+      const { accessToken, refreshToken: newRefreshToken, rememberMe: serviceRememberMe } = await this.staffService.refreshAccessToken(refreshToken);
 
       // * Actualizamos la cookie si existe:
-      if (req.cookie.refreshToken) {
-        res.cookie('refreshToken', newRefreshToken, {
+      const cookiesOptions = {
           httpOnly: true,
           secure: false,
-          maxAge: 2 * 24 * 60 * 60 * 1000, // 2 dias en milisegundos
-          sameSite:'lax'
-        });
-      }
+          sameSite:'lax',
+          path: '/',
+          ...(serviceRememberMe ? { maxAge: 2 * 24 * 60 * 60 * 1000 } : {} ) // * Si rememberMe es false, no establecemos maxAge para que sea una cookie de sesión
+      };
+      
+      res.cookie('refreshToken', newRefreshToken, cookiesOptions)
       res.json({ accessToken, expireIn: 20 * 60 });
-    } catch (error) {
-      next(error);
-    }
-  }
 
-  async logout(req, res, next) {
-    try {
-      const userId = req.user.id;
-      await this.staffService.logout(userId);
-        
-      res.clearCookie('refreshToken');
-      res.status(204).end();
     } catch (error) {
+       res.clearCookie('refreshToken', { httpOnly: true, secure: false, sameSite: 'lax', path: '/' }); // * Para evitar ciclos infinitos o tokens inválidos
+      if (error.name === 'TokenExpiredError' || error.name === 'JsonWebTokenError') {
+         return res.status(401).json({ message: 'Invalid Refresh Token', statusCode: 401, success: false });
+      }
       next(error);
     }
   }
@@ -147,6 +158,24 @@ export default class StaffController{
       next(error)
     }
   }
+  async getById(req,res,next) {
+    try {
+      const { id } = req.params 
+      const staffs = await this.staffService.getById(id)
+      res.json(staffs)
+    } catch (error){
+      next(error)
+    }
+  }
+  async getByName(req,res,next) {
+    try {
+      const { name } = req.params 
+      const staffs = await this.staffService.getByName(name)
+      res.json(staffs)
+    } catch (error){
+      next(error)
+    }
+  }
   async update(req,res,next){
     try{
       const { id } = req.params
@@ -163,6 +192,86 @@ export default class StaffController{
       await this.staffService.delete(id)
       res.status(204).end() // .end termina la peticion 
     }catch(error){
+      next(error)
+    }
+  }
+
+  async logout(req, res, next) {
+    try {
+      // * 1. Limpiamos cookies de autenticación:
+      res.clearCookie('refreshToken', {
+         httpOnly: true,
+         secure: false, // * De momento false permitiendo que la cookie se pueda enviar a través de HTTP (necesario para pruebas locales sin HTTPS)
+         sameSite: 'lax'
+       });
+      
+      // * 2. Intentamos obtener el refresh token de las cookies:
+      const refreshToken = req.cookies?.refreshToken || req.body?.refreshToken;
+      // console.log('Refresh Token:', refreshToken);
+   
+      // * 3. Verificamos que el refresh token exista:
+      if (refreshToken) {
+         try {
+            const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+            await this.staffService.logout(decoded.id);
+         } catch (error) {
+            console.error('Error al verificar el refresh token:', error.message);
+         }
+      }
+
+      // * 4. Limpiar cookies en la respuesta
+      this.clearCookie(res);
+
+      // * Invalidamos el token de acceso actual:
+      res.status(204).end();
+    } catch (error) {
+      console.error('Error en logout:', error);
+      res.clearCookie('refreshToken');
+      next(error);
+    }
+  }
+
+  clearCookie(res) {
+    res.clearCookie('auth._token.local');
+    res.clearCookie('auth._token_expiration.local');
+    res.clearCookie('auth.strategy');
+    res.clearCookie('refreshToken', {
+        httpOnly: true,
+        secure: false, // * De momento false permitiendo que la cookie se pueda enviar a través de HTTP (necesario para pruebas locales sin HTTPS)
+        sameSite: 'lax'
+    });
+  }
+
+   // * METODO PARA VALIDAR TOKEN EN 'MANTENER SESION INICIADA':
+   async validateToken(req, res) {
+      try {
+         const token = req.headers.authorization?.split(' ')[1];
+         if (!token) 
+            return res.status(401).json({ message: 'Invalid Token', valid: false });
+         
+         const decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET);
+         const user = await this.staffService.getByEmail(decoded.email);
+         
+         if (!user || !user.refreshToken) 
+            return res.status(404).json({ message: 'Usuario no encontrado o token invalido', valid: false });
+
+         return res.json({ valid: true });
+      } catch (error) {
+         console.error('Error en validateToken:', error);
+         return res.status(500).json({ message: 'Invalid Token', valid: false  });
+      }
+   } 
+
+   async getUser (req, res, next) {
+    try {
+      const { personalEmail } = req.user
+      if (!personalEmail) throw { message: 'Usuario NO Encontrado', statusCode: 404}
+      
+      const user = await this.staffService.getByEmail(personalEmail)
+      if (!user) throw { message: 'Usuario No Encontrado', statusCode: 404 }
+
+      res.json({ user })
+    } catch (error) {
       next(error)
     }
   }

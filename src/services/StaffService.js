@@ -9,29 +9,30 @@ export default class StaffService {
     this.staffRepository = new StaffRepository()
   }
 
-  async login(personalEmail, password) {
+  async login(personalEmail, password, rememberMe) {
     const user = await this.staffRepository.findByUser(personalEmail);
     if (!user)
-        throw { messasge: 'User not found', statusCode: 401 };
-
-    // ! Verificar si ya hay sesion activa
-    const tokenExists = await this.staffRepository.getSessionByToken(user.id)
-    if (tokenExists)
-        throw { messasge: 'You are already logged in', statusCode: 401 };
-
+       throw { message: 'User not found', statusCode: 400, isCredentialError: true };
+ 
     // ! Comparar la contraseña encritada
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
-      throw { messasge: 'Invalid credentials', statusCode: 401 };
+      throw { message: 'Invalid credentials', statusCode: 400, isCredentialError: true };
     }
-
+ 
+    // ! Verificar si ya hay sesion activa
+    // const tokenExists = await this.staffRepository.getSessionByToken(user.id)
+    // if (tokenExists)
+    //    throw { message: 'You are already logged in', statusCode: 400, isCredentialError: true };
+ 
+ 
     // * Generamos ambos tokens.
     const accessToken = this.generateAccessToken(user);
     const refreshToken = this.generateRefreshToken(user);
 
-    await this.staffRepository.updateSessionTokens(user.id, { accessToken, refreshToken }); //! Actualizar el token en la base de datos para el usuario en concreto
+    await this.staffRepository.updateSessionTokens(user.id, { accessToken, refreshToken, rememberMe }); //! Actualizar el token en la base de datos para el usuario en concreto
     
-    return { accessToken, refreshToken };
+    return { accessToken, refreshToken, rememberMe };
   }
 
   // * Generar token corto 
@@ -49,16 +50,37 @@ export default class StaffService {
       const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
       const user = await this.staffRepository.getById(decoded.id);
 
-      if (!user || user.currentSession !== refreshToken) 
+      if (!user || user.refreshToken !== refreshToken) 
         throw { message: 'Invalid refresh token', statusCode: 401 };
+
+      // * Obtenemos el rememberMe del usuario de la base de datos:
+      const currentRememberMe = user.rememberMe || false;
+
+      // * Verificar inactividad por 20 min:
+      const lastActivity = user.lastActivity?.toDate?.() || user.lastActivity;
+
+      if (!lastActivity) {
+         const newAccessToken = this.generateAccessToken(user);
+         const newRefreshToken = this.generateRefreshToken(user);
+   
+         await this.staffRepository.updateSessionTokens(user.id, { accessToken: newAccessToken, refreshToken: newRefreshToken, lastActivity: new Date() });
+
+         return { accessToken: newAccessToken, refreshToken: newRefreshToken };
+      }
+
+      if (Date.now() - lastActivity.getTime() > 20 * 60 * 1000) {
+         await this.logout(user.id); // * Cerrar sesión si el usuario ha estado inactivo por más de 20 minutos
+         throw { message: 'User inactive, we close your account for security', statusCode: 401 };
+      }
+
 
       const newAccessToken = this.generateAccessToken(user);
       const newRefreshToken = this.generateRefreshToken(user);
 
       // * Actualizar el token en la base de datos:
-      await this.staffRepository.updateSessionTokens(user.id, { accessToken: newAccessToken, refreshToken: newRefreshToken });
+      await this.staffRepository.updateSessionTokens(user.id, { accessToken: newAccessToken, refreshToken: newRefreshToken, lastActivity: new Date(), rememberMe: currentRememberMe });
 
-      return { accessToken: newAccessToken, refreshToken: newRefreshToken };
+      return { accessToken: newAccessToken, refreshToken: newRefreshToken, rememberMe: currentRememberMe };
 
     } catch (error) {
       throw { message: 'Invalid refresh token', statusCode: 401 };
@@ -182,8 +204,11 @@ export default class StaffService {
     return this.staffRepository.create({...newStaff})
   }
 
-  async getByEmail() {
-    return await this.staffRepository.getByEmail()
+  async getByEmail(personalEmail) {
+   if (!personalEmail) { 
+      throw { message: 'Email is required', statusCode: 400 }
+   }
+   return await this.staffRepository.getByEmail(personalEmail)
   }
 
   async getAll() {
@@ -192,6 +217,16 @@ export default class StaffService {
 
   async getByRol (rol) {
     return await this.staffRepository.getByRol(rol)
+  }
+  async getById (id) {
+    return await this.staffRepository.getById(id)
+  }
+
+  async getByName (name) {
+    return await this.staffRepository.getByName(name)
+  }
+  async getById(id) {
+   return await this.staffRepository.getById(id);
   }
 
   async update (id,staffData){
@@ -220,5 +255,17 @@ export default class StaffService {
     }
     await this.staffRepository.delete(id)
   }
+
+
+  async logout(userId) {
+    // * Eliminamos tokens de sesion de la DB:
+    await this.staffRepository.clearSessionTokens(userId);
+  }
+
+//   async getByUser(usuario) {
+//     const user = await this.UserRepository.findByUser(usuario)
+//     if (!user) throw { message: 'Usuario No Encontrado', statusCode: 404 }
+//     return user
+//   }
 
 }
